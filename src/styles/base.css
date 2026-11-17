@@ -1,0 +1,546 @@
+/* Reset, type, and the shared pieces used on every page. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
+  background: var(--ivory);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+h2 {
+  font-size: var(--fs-h2);
+}
+h3 {
+  font-size: var(--fs-h3);
+  line-height: 1.15;
+}
+p {
+  text-wrap: pretty;
+}
+.lede {
+  font-size: var(--fs-lede);
+  line-height: 1.55;
+  max-width: 58ch;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mandarin-deep);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+.hero :focus-visible,
+.s3 :focus-visible,
+.footer :focus-visible,
+.lightbox :focus-visible,
+.shell--home .nav:not(.nav--scrolled) :focus-visible,
+.menu-open .nav :focus-visible {
+  outline-color: var(--mandarin);
+}
+main:focus {
+  outline: none;
+}
+
+/* ---------- shell and the fixed environment ---------- */
+.shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  animation: page-in var(--t-slow) var(--ease-out) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.env {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.env__contours {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  stroke: var(--gold-text);
+  opacity: 0.085;
+  animation: env-drift 90s var(--ease-inout) -20s infinite alternate;
+}
+.env__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .04 0 0 0 0 .16 0 0 0 0 .13 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes env-drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, 1.2%, 0) scale(1.04);
+  }
+}
+
+/* ---------- buttons and links ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 22px;
+  background: var(--mandarin);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  border-radius: 2px;
+  text-shadow: none;
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+.btn:hover {
+  background: var(--mandarin-hover);
+}
+.btn--sm {
+  padding: 10px 16px;
+  font-size: 0.88rem;
+}
+.btn__arrow {
+  flex: none;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.btn:hover .btn__arrow,
+.link:hover .btn__arrow {
+  transform: translateX(4px);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 4px;
+  font-weight: 500;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border-strong);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+.link:hover {
+  border-color: var(--ink);
+}
+.link--light {
+  color: var(--ivory);
+  border-color: var(--gold-soft);
+}
+.link--light:hover {
+  border-color: var(--ivory);
+}
+.link--small {
+  font-size: var(--fs-small);
+  margin-left: 14px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .link,
+  .langs__btn,
+  .tabs button,
+  .clip__btn,
+  .lightbox__bar button {
+    min-height: 44px;
+  }
+  .langs__btn {
+    min-width: 44px;
+  }
+}
+
+/* ---------- mono labels ---------- */
+.doclabel,
+.tag,
+.chip,
+.facts dt,
+.numbers__l,
+.numbers__since,
+.hero__kicker,
+.hero__meta,
+.trivoice__ghosts,
+.countdown__label,
+.tcard__role,
+.ccard__name,
+.rcard__n,
+.formnote,
+.footer h2,
+.voices p,
+.voices b,
+.season__part > h3,
+.lightbox figcaption,
+.clip__btn {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+
+.doclabel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: clamp(18px, 2.4vw, 30px);
+  color: var(--gold-text);
+}
+.doclabel i {
+  flex: 0 1 140px;
+  height: 1px;
+  background: var(--gold);
+  transform-origin: left;
+  animation: draw-x 1.1s var(--ease-out) 0.15s both;
+}
+.reveal .doclabel i {
+  animation: none;
+  transform: scaleX(0);
+  transition: transform 1.1s var(--ease-out) 0.1s;
+}
+.reveal.in .doclabel i {
+  transform: scaleX(1);
+}
+.doclabel--dark {
+  color: var(--gold-soft);
+}
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.tag,
+.chip {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid var(--border-strong);
+  color: var(--ink);
+  border-radius: 2px;
+}
+.chip {
+  vertical-align: middle;
+}
+.chip--open {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: var(--ivory);
+}
+.chip--closed {
+  color: var(--ink-soft);
+}
+
+/* ---------- facts list (date, venue, participants) ---------- */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px clamp(28px, 5vw, 64px);
+}
+.facts dt {
+  color: var(--gold-text);
+  margin-bottom: 6px;
+}
+.facts dd {
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+  line-height: 1.15;
+}
+.facts--dark dt {
+  color: var(--gold-soft);
+}
+.facts--stack {
+  flex-direction: column;
+  gap: 0;
+}
+.facts--stack > div {
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+.facts--stack > div:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- the invitation frame, photos, and the "no photo" placeholder ---------- */
+.frame {
+  position: relative;
+  background: var(--champagne);
+  outline: 1px solid var(--line);
+  outline-offset: 7px;
+}
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line);
+  pointer-events: none;
+}
+.picture {
+  overflow: hidden;
+}
+.picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-out);
+}
+.nophoto {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  color: var(--gold-text);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 42%, rgba(247, 242, 232, 0.9), rgba(247, 242, 232, 0) 70%),
+    var(--champagne);
+}
+.nophoto img {
+  width: clamp(54px, 26%, 96px);
+  opacity: 0.2;
+}
+.nophoto span {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- the seal (brand mark on an ivory disc) ---------- */
+.seal {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--seal);
+  height: var(--seal);
+  border-radius: 50%;
+  background: var(--ivory);
+  box-shadow:
+    0 0 0 1px var(--gold),
+    0 0 0 4px rgba(247, 242, 232, 0.16);
+}
+.seal img {
+  width: 66%;
+  height: 66%;
+}
+
+/* ---------- Roman numerals that draw their own outline ---------- */
+.roman {
+  overflow: visible;
+  height: auto;
+}
+.roman text {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 150px;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.1;
+  stroke-dasharray: 720;
+  stroke-dashoffset: 720;
+  transition: stroke-dashoffset 2.6s var(--ease-inout) 0.15s;
+}
+.roman.in text {
+  stroke-dashoffset: 0;
+}
+
+/* ---------- entrances: children with --i arrive in sequence ---------- */
+.reveal [style*='--i'] {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition:
+    opacity var(--t-slow) var(--ease-out),
+    transform var(--t-slow) var(--ease-out);
+  transition-delay: calc(var(--i) * 85ms + 60ms);
+}
+.reveal.in [style*='--i'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- the signature: three voices ---------- */
+.trivoice__stack {
+  display: grid;
+  perspective: 700px;
+}
+.trivoice__line {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translate3d(0, 0.32em, 0) rotateX(-55deg);
+  transform-origin: 50% 80%;
+  transition:
+    opacity var(--t-med) var(--ease-out),
+    transform 720ms var(--ease-out);
+}
+.trivoice[data-step='0'] .trivoice__line[data-i='0'],
+.trivoice[data-step='1'] .trivoice__line[data-i='1'],
+.trivoice[data-step='2'] .trivoice__line[data-i='2'] {
+  opacity: 1;
+  transform: none;
+}
+.trivoice[data-step='1'] .trivoice__line[data-i='0'],
+.trivoice[data-step='2'] .trivoice__line[data-i='0'],
+.trivoice[data-step='2'] .trivoice__line[data-i='1'] {
+  transform: translate3d(0, -0.32em, 0) rotateX(55deg);
+}
+.trivoice__ghosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin-top: clamp(14px, 1.8vw, 22px);
+  color: var(--ink-soft);
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--ease-out) 0.25s;
+}
+.trivoice[data-step='2'] .trivoice__ghosts {
+  opacity: 1;
+}
+.trivoice__ghosts b {
+  font-weight: 500;
+  color: var(--gold-text);
+  margin-right: 6px;
+  font-size: 0.68rem;
+}
+
+/* ---------- the flight line ---------- */
+.flightline {
+  position: absolute;
+  top: 0;
+  left: calc(var(--gutter) * 0.5 - 22px);
+  width: 44px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  display: none;
+}
+.flightline path {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+@media (min-width: 1180px) {
+  .flightline {
+    display: block;
+  }
+}
+
+/* ---------- pause everything while the tab is hidden ---------- */
+body.paused *,
+body.paused *::before,
+body.paused *::after {
+  animation-play-state: paused !important;
+}
+
+/* ---------- reduced motion: final states, drives stopped ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal [style*='--i'] {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal .doclabel i {
+    transform: scaleX(1);
+  }
+  .roman text {
+    stroke-dashoffset: 0;
+  }
+  .trivoice__ghosts {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "_review": "DRAFT. Uzbek copy written by Claude and waiting for review by a native speaker. Uses the correct letter ʻ (U+02BB) for oʻ and gʻ, and ʼ (U+02BC) for the tutuq belgisi.",
+  "meta": {
+    "title": "SIFMUN · Strategic International Forum Model United Nations",
+    "description": "Oʻzbekistonning Fargʻona shahridagi BMT modeli: ingliz, oʻzbek va rus tillarida. III mavsum yaqinda."
+  },
+  "count": [
+    "Nol",
+    "Bir",
+    "Ikki",
+    "Uch",
+    "Toʻrt",
+    "Besh",
+    "Olti",
+    "Yetti",
+    "Sakkiz",
+    "Toʻqqiz",
+    "Oʻn"
+  ],
+  "nav": {
+    "home": "SIFMUN bosh sahifasi",
+    "history": "Tarix",
+    "team": "Jamoa",
+    "register": "Roʻyxatdan oʻtish",
+    "joinTelegram": "Telegramga oʻtish",
+    "skip": "Asosiy qismga oʻtish",
+    "menu": "Menyu",
+    "close": "Yopish",
+    "language": "Til"
+  },
+  "floor": "Soʻz sizga.",
+  "cta": {
+    "joinOurTelegram": "Telegram kanalimizga qoʻshiling",
+    "register": "Roʻyxatdan oʻtish"
+  },
+  "hero": {
+    "kicker": "SIFMUN · FARGʻONA · OʻZBEKISTON",
+    "b1": "Dunyo majlisga yigʻildi.",
+    "b2": "Bir davlat oʻrnini egallang. Uning pozitsiyasini himoya qiling.",
+    "b3": "English. Oʻzbekcha. Русский.",
+    "b3sub": "Uchta ish tili.",
+    "b4": "{seasons} mavsum. {participants} ishtirokchi. Bitta vodiy.",
+    "b5sub": "III mavsum manzili: {venue}.",
+    "staticSub": "Fargʻonadagi BMT modeli: ingliz, oʻzbek va rus tillarida. III mavsum yaqinda.",
+    "seePast": "Oʻtgan mavsumlar",
+    "scroll": "Pastga aylantiring"
+  },
+  "about": {
+    "label": "SIFMUN/ABOUT",
+    "title": "Uch tilda soʻzlashadigan forum.",
+    "p1": "SIFMUN (Strategic International Forum Model United Nations) Oʻzbekistonning Fargʻona shahrida oʻtkaziladigan BMT modelidir. Bir kun davomida oʻquvchi va talabalar delegatga aylanadi. Har biri bir davlatni oladi, uning pozitsiyasini oʻrganadi va qoʻmitada himoya qiladi.",
+    "p2": "Har bir sessiya ingliz, oʻzbek va rus tillarida oʻtadi, shuning uchun oʻzingiz oʻylaydigan tilda gapirasiz.",
+    "tilesCaption": "Har bir nutq shunday boshlanadi.",
+    "photoAlt": "Doira shaklida ushlab turilgan tashkilotchi, rais va delegat beyjlari"
+  },
+  "s3": {
+    "label": "SIFMUN/S.III",
+    "title": "III mavsum yaqinlashmoqda.",
+    "dateTba": "Sana keyinroq eʼlon qilinadi",
+    "venue": "Manzil",
+    "date": "Sana",
+    "p": "Roʻyxatdan oʻtish tez orada ochiladi. Sana birinchi boʻlib Telegram kanalimizda eʼlon qilinadi.",
+    "days": "kun",
+    "hours": "soat",
+    "minutes": "daqiqa",
+    "seconds": "soniya"
+  },
+  "numbers": {
+    "seasons": [
+      "mavsum"
+    ],
+    "participants": [
+      "ishtirokchi"
+    ],
+    "committees": [
+      "qoʻmita"
+    ],
+    "languages": [
+      "til"
+    ],
+    "since": "2026-yil fevraldan beri.",
+    "conferences": [
+      "konferensiya"
+    ]
+  },
+  "committees": {
+    "label": "SIFMUN/COMMITTEES",
+    "title": "Hozirgacha {nl}ta qoʻmita.",
+    "p": "Har biri haqiqiy xalqaro tashkilot ishini modellashtiradi.",
+    "seeEvery": "Barcha mavsumlar",
+    "ranOne": "{a} mavsum",
+    "ranTwo": "{a} va {b} mavsumlar",
+    "ranMany": "{list} mavsumlar"
+  },
+  "past": {
+    "label": "SIFMUN/RECORD",
+    "title": "Ortda {nl}ta mavsum.",
+    "season": "{roman} mavsum",
+    "participants": "{n} ishtirokchi",
+    "readHistory": "Tarixni oʻqish",
+    "coverAlt": "{roman} mavsumdan surat"
+  },
+  "placard": {
+    "title": "Tablichkangizni koʻtaring.",
+    "p": "Qoʻmitada soʻz shunday soʻraladi. Bosib turing.",
+    "delegate": "DELEGAT",
+    "hold": "Tablichkani koʻtarish uchun bosib turing",
+    "recognised": "Soʻz berildi. Soʻz sizga.",
+    "soon": "III mavsumga roʻyxatdan oʻtish tez orada ochiladi. Birinchi boʻlib bilib oling.",
+    "open": "III mavsumga roʻyxatdan oʻtish ochiq.",
+    "closed": "Bu mavsumga roʻyxatdan oʻtish yopildi. Keyingisi uchun bizni kuzatib boring."
+  },
+  "footer": {
+    "line": "SIFMUN. Strategic International Forum Model United Nations. Fargʻona, Oʻzbekiston.",
+    "photo": "Suratda borsiz va uni olib tashlashni istaysizmi? Telegram orqali yozing, olib tashlaymiz.",
+    "rights": "© 2026 SIFMUN",
+    "pages": "Sahifalar",
+    "follow": "Kuzatish"
+  },
+  "history": {
+    "label": "SIFMUN/RECORD",
+    "title": "Har bir mavsum bayonnomada.",
+    "p": "Hozirgacha {nl}ta konferensiya. Qayerda yigʻilganimiz va nimalarni muhokama qilganimiz shu yerda.",
+    "venue": "Manzil",
+    "date": "Sana",
+    "participants": "Ishtirokchilar",
+    "committees": "Qoʻmitalar",
+    "agenda": "Kun tartibi",
+    "chairs": "Raislar",
+    "awards": "Mukofotlar",
+    "gallery": "Galereya",
+    "moments": "Lahzalar",
+    "upcoming": "Kutilmoqda",
+    "best": "Eng yaxshi delegat",
+    "outstanding": "Aʼlo delegat",
+    "honorable": "Faxriy eʼtirof",
+    "openPhoto": "{n}-suratni ochish",
+    "close": "Yopish",
+    "prev": "Oldingi",
+    "next": "Keyingi",
+    "photoOf": "{total} tadan {n}-surat",
+    "play": "Videoni ijro etish",
+    "pause": "Toʻxtatish"
+  },
+  "team": {
+    "label": "SIFMUN/TEAM",
+    "title": "Tablichkalar ortidagi insonlar.",
+    "p": "SIFMUNni ikki tashkilotchi boshqaradi. Har mavsumda ularga raislar, kotibiyat va koʻngillilar qoʻshiladi.",
+    "chairs": "Raislar",
+    "secretariat": "Kotibiyat",
+    "volunteers": "Koʻngillilar",
+    "noPhoto": "Surat hali yoʻq",
+    "seasonTeams": "Mavsum jamoalari"
+  },
+  "register": {
+    "label": "SIFMUN/REG",
+    "title": "III mavsumga roʻyxatdan oʻting.",
+    "statusSoon": "Tez orada",
+    "statusOpen": "Ochiq",
+    "statusClosed": "Yopiq",
+    "textSoon": "Roʻyxatdan oʻtish hali ochilmagan. Bu haqda birinchi boʻlib Telegramda eʼlon qilamiz.",
+    "textOpen": "Roʻyxatdan oʻtish ochiq. Quyidagi shaklni toʻldiring.",
+    "textClosed": "Bu mavsumga roʻyxatdan oʻtish yopildi. Keyingisi uchun bizni kuzatib boring.",
+    "venue": "Manzil",
+    "date": "Sana",
+    "capacity": "Oʻrinlar soni",
+    "capacityValue": "{n} ta oʻrin",
+    "fee": "Toʻlov",
+    "roles": "Rollar",
+    "openInMaps": "Xaritada ochish",
+    "mapTitle": "Manzil xaritasi",
+    "applyAs": "Kim sifatida",
+    "formClosed": "Shakl roʻyxatdan oʻtish ochilganda ishga tushadi.",
+    "consent": "Konferensiyani tashkil etish uchun javoblarim SIFMUNda saqlanishiga roziman. Ularni faqat ikki tashkilotchi koʻra oladi.",
+    "under18": "Agar 18 yoshga toʻlmagan boʻlsangiz, ariza berayotganingizni ota-onangiz yoki vasiyingizga ayting.",
+    "send": "Arizani yuborish",
+    "sending": "Yuborilmoqda",
+    "success": "Ariza qabul qilindi. Keyingi qadamlar haqida siz bilan bogʻlanamiz.",
+    "errRequired": "Iltimos, bu maydonni toʻldiring.",
+    "errEmail": "Elektron pochta manzilini tekshiring.",
+    "errPhone": "Telefon raqamini tekshiring.",
+    "errGeneric": "Xatolik yuz berdi. Bir daqiqadan soʻng qayta urinib koʻring.",
+    "choice1": "Birinchi tanlov",
+    "choice2": "Ikkinchi tanlov",
+    "choice3": "Uchinchi tanlov",
+    "select": "Tanlang",
+    "faqTitle": "Delegatlar soʻraydigan savollar.",
+    "errLink": "Havolani tekshiring.",
+    "errConsent": "Davom etish uchun belgini qoʻying.",
+    "required": "majburiy"
+  },
+  "notFound": {
+    "title": "Bu sahifa kun tartibida yoʻq.",
+    "back": "Bosh sahifaga qaytish"
+  }
+}

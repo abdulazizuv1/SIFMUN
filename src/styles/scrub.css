@@ -1,0 +1,348 @@
+/* The scroll film hero. Everything animated here is transform or opacity, driven by
+   two values the engine writes per band: its opacity, and --k (0 to 1, how far the
+   band's text has assembled). Scroll back up and every entrance runs in reverse. */
+
+.hero--scrub {
+  height: 1000vh;
+  height: 1000svh;
+  overflow: visible; /* the stage is sticky: nothing above it may clip or scroll */
+}
+.scrub__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  overflow: clip;
+  isolation: isolate;
+}
+.scrub__media,
+.scrub__poster,
+.scrub__still,
+.scrub__video,
+.scrub__grade {
+  position: absolute;
+  inset: 0;
+}
+.scrub__poster,
+.scrub__still {
+  background-size: cover;
+  background-position: 50% 50%;
+}
+.scrub__still {
+  opacity: 0;
+}
+.scrub__video {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  opacity: 0;
+  transform: translateZ(0); /* its own compositor layer: repaints never drag the page */
+  transition: opacity 700ms var(--ease-out);
+}
+.video-ready .scrub__video {
+  opacity: 1;
+}
+.video-failed .scrub__video {
+  display: none;
+}
+/* The base grade: always on, so no frame is ever raw behind the page. Fine grain
+   on top keeps the footage and the paper sections in one world. */
+.scrub__grade {
+  background: radial-gradient(ellipse 120% 92% at 50% 46%, rgba(5, 24, 18, 0) 38%, rgba(5, 24, 18, 0.42) 100%);
+}
+.scrub__grade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- bands ---------- */
+.band {
+  --k: 0;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  padding: calc(var(--nav-h) + clamp(20px, 5vh, 56px)) var(--gutter) clamp(26px, 5vh, 56px);
+  opacity: 0;
+  pointer-events: none;
+  isolation: isolate; /* keeps each band's scrim above the film and below its own text */
+}
+.band.on a,
+.band.on button {
+  pointer-events: auto;
+}
+.band::before,
+.band::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Bands 1 to 4 sit in the left column. The eagle keeps the centre and the right. */
+.band--left {
+  align-items: center;
+  color: var(--ivory);
+  text-shadow: var(--tshadow-dark);
+}
+.band--left::before {
+  inset: -6%;
+  opacity: calc(0.3 + 0.7 * var(--k));
+  background: radial-gradient(
+    ellipse 64% 74% at 18% 50%,
+    rgba(5, 24, 18, var(--scrim, 0.7)) 0%,
+    rgba(5, 24, 18, calc(var(--scrim, 0.7) * 0.86)) 52%,
+    rgba(5, 24, 18, 0) 84%
+  );
+}
+.band--dawn {
+  --scrim: 0.74;
+}
+.band--dive {
+  --scrim: 0.62;
+}
+.band--fog {
+  --scrim: 0.6;
+}
+.band--break {
+  --scrim: 0.58;
+}
+.band__inner {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+}
+.band__kicker {
+  margin-bottom: clamp(14px, 2.4vh, 26px);
+  animation: none;
+  opacity: clamp(0, (var(--k) - 0.5) * 2.2, 1);
+}
+.band__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.2rem, 4.4vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  max-width: min(36vw, 620px); /* with the gutter this ends near 41% of the frame: the eagle owns the centre */
+}
+.band__title--xl {
+  font-size: clamp(2.6rem, 5.6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.band__sub {
+  margin-top: clamp(14px, 2.2vh, 22px);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+/* 1. Blur to sharp: two stacked copies crossfade. The blur itself never animates. */
+.focus {
+  display: grid;
+}
+.focus__soft,
+.focus__sharp {
+  grid-area: 1 / 1;
+}
+.focus__soft {
+  filter: blur(10px);
+  opacity: calc(clamp(0, var(--k) * 3, 1) * (1 - clamp(0, (var(--k) - 0.3) * 1.8, 1)));
+}
+.focus__sharp {
+  opacity: clamp(0, (var(--k) - 0.3) * 1.6, 1);
+}
+
+/* 2. Drift down: each word starts above its place and falls into it. */
+.band--dive .w {
+  display: inline-block;
+  --kc: clamp(0, (var(--k) - var(--th, 0)) * 2.8, 1);
+  opacity: var(--kc);
+  transform: translate3d(0, calc((1 - var(--kc)) * -28px), 0);
+}
+
+/* 3. Out of the mist: three languages surface one after another. */
+.band--fog .w {
+  display: block;
+  transform-origin: 0 60%;
+  --kc: clamp(0, (var(--k) - var(--th, 0)) * 3.2, 1);
+  opacity: var(--kc);
+  transform: scale(calc(1.06 - 0.06 * var(--kc)));
+}
+.band--fog .band__sub {
+  opacity: clamp(0, (var(--k) - 0.82) * 5.5, 1);
+}
+
+/* 4. The veil parts: the sentences slide apart into place. */
+.half {
+  display: block;
+  --kc: clamp(0, var(--k) * 1.5, 1);
+  opacity: var(--kc);
+  transform: translate3d(calc((1 - var(--kc)) * var(--dir, 1) * 54px), 0, 0);
+}
+
+/* 5. At rest. Ink on the pale sky above, ivory on the valley below. */
+.band--settle {
+  grid-template-rows: 1fr auto;
+  gap: 24px;
+}
+.band--settle::before {
+  inset: 0 0 52% 0;
+  background: radial-gradient(ellipse 86% 96% at 26% 8%, rgba(247, 242, 232, 0.62) 0%, rgba(247, 242, 232, 0) 80%);
+}
+.band--settle::after {
+  inset: 44% 0 0 0;
+  background: linear-gradient(180deg, rgba(5, 24, 18, 0) 0%, rgba(5, 24, 18, 0.46) 55%, rgba(5, 24, 18, 0.74) 100%);
+}
+.settle__top,
+.settle__bottom {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+}
+.settle__top {
+  color: var(--ink);
+  --kc: clamp(0, var(--k) * 1.6, 1);
+  opacity: var(--kc);
+  transform: translate3d(0, calc((1 - var(--kc)) * 22px), 0);
+}
+.settle__title .trivoice__ghosts {
+  color: var(--ink);
+}
+.settle__title .trivoice__ghosts b {
+  color: var(--ink);
+  opacity: 0.72;
+}
+.settle__bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 18px 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-dark);
+  color: var(--ivory);
+  text-shadow: var(--tshadow-dark);
+}
+.settle__sub {
+  grid-column: 1 / -1;
+  max-width: 44ch;
+  font-size: var(--fs-lede);
+  line-height: 1.5;
+  --ks: clamp(0, (var(--k) - 0.5) * 3, 1);
+  opacity: var(--ks);
+  transform: translate3d(0, calc((1 - var(--ks)) * 14px), 0);
+}
+.settle__actions,
+.settle__meta {
+  --kb: clamp(0, (var(--k) - 0.68) * 3.4, 1);
+  opacity: var(--kb);
+  transform: translate3d(0, calc((1 - var(--kb)) * 14px), 0);
+}
+.settle__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+}
+.settle__meta {
+  animation: none;
+}
+
+/* ---------- loading ring, then the scroll cue ---------- */
+.scrub__cue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(18px, 4vh, 40px);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: var(--ivory);
+  transform: translateX(-50%);
+  transition: opacity var(--t-med) var(--ease-out);
+}
+.scrub--moved .scrub__cue {
+  opacity: 0;
+}
+.scrub__ring {
+  width: 44px;
+  height: 44px;
+  max-width: none;
+  border-radius: 50%;
+  background: rgba(5, 24, 18, 0.5);
+}
+.scrub__ring circle,
+.scrub__chevron {
+  fill: none;
+  stroke-width: 2;
+}
+.scrub__ring-track {
+  stroke: rgba(247, 242, 232, 0.22);
+}
+.scrub__ring-fill {
+  stroke: var(--gold-soft);
+  stroke-dashoffset: var(--ld, 126);
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition:
+    stroke-dashoffset 160ms linear,
+    opacity var(--t-med) var(--ease-out) 0.2s;
+}
+.scrub__chevron {
+  stroke: var(--ivory);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity var(--t-med) var(--ease-out) 0.3s;
+}
+.scrub__cue-label {
+  padding: 3px 10px;
+  border-radius: 2px;
+  background: rgba(5, 24, 18, 0.5);
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity var(--t-med) var(--ease-out) 0.3s;
+}
+/* Film in (or given up on): the ring hands over to the cue. */
+.video-settled .scrub__ring-fill {
+  opacity: 0;
+}
+.video-settled .scrub__chevron,
+.video-settled .scrub__cue-label {
+  opacity: 1;
+}
+.video-settled .scrub__chevron {
+  animation: cue-nudge 2.6s var(--ease-inout) -0.8s infinite;
+}
+.scrub--moved .scrub__chevron {
+  animation: none;
+}
+@keyframes cue-nudge {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* A shallow desktop window keeps the film but has no room for the extras. */
+@media (max-height: 560px) {
+  .scrub__cue,
+  .settle__meta {
+    display: none;
+  }
+  .band__title--xl {
+    font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+  }
+}

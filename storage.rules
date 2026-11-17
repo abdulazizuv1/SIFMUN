@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// SIFMUN security rules for Firebase Storage (photos and short clips uploaded from the admin).
+// Anyone can view the files, because they are shown on the public site.
+// Only the two admins can upload, replace or delete, and only images and MP4 clips under a size limit.
+// Use the same two UIDs as in firestore.rules.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid in [
+        'A266AS0QqZPjbCeMgLKwoHXhISa2', // admin@sifmun.com
+        'SkDiwfabuYSewOLzKC1k5rlmli32'  // key@sifmun.com
+      ];
+    }
+
+    match /media/{allPaths=**} {
+      allow read: if true;
+      allow delete: if isAdmin();
+      allow create, update: if isAdmin() && (
+        (request.resource.contentType.matches('image/(webp|jpeg|png)') && request.resource.size < 6 * 1024 * 1024)
+        || (request.resource.contentType == 'video/mp4' && request.resource.size < 40 * 1024 * 1024)
+      );
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

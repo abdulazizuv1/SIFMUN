@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// SIFMUN security rules for Cloud Firestore.
+//
+// Who can do what:
+//   Everyone      reads the public content (settings, seasons, committees, team, awards, gallery, FAQ, roles).
+//   Everyone      creates ONE kind of document: a registration, and only while registration is Open.
+//   The 2 admins  read and change everything, including registrations.
+//
+// The admin list is the UID allowlist below. Hiding the /admin page is not the protection; these rules are.
+//
+// The two UIDs in isAdmin() were filled in on 17 November 2026. To change an admin later:
+//   Firebase Console -> Authentication -> Users -> copy the "User UID" of the account,
+//   replace the value in isAdmin() here AND in storage.rules, then deploy again.
+//
+// HOW TO DEPLOY (run inside the `site` folder):
+//   firebase login
+//   firebase deploy --only firestore:rules,storage
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid in [
+        'A266AS0QqZPjbCeMgLKwoHXhISa2', // admin@sifmun.com
+        'SkDiwfabuYSewOLzKC1k5rlmli32'  // key@sifmun.com
+      ];
+    }
+
+    function registrationOpen() {
+      return get(/databases/$(database)/documents/settings/site).data.registrationStatus == 'open';
+    }
+
+    // A registration may contain exactly these fields, with these types and size limits.
+    // `answers` is one JSON string, so its total size can be capped here.
+    function validRegistration() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['roleId', 'roleName', 'seasonNumber', 'lang', 'answers', 'consent', 'status', 'createdAt'])
+        && d.keys().hasAll(['roleId', 'roleName', 'seasonNumber', 'lang', 'answers', 'consent', 'status', 'createdAt'])
+        && d.roleId is string && d.roleId.size() > 0 && d.roleId.size() <= 64
+        && d.roleName is string && d.roleName.size() <= 120
+        && d.seasonNumber is int && d.seasonNumber > 0 && d.seasonNumber < 1000
+        && d.lang in ['en', 'uz', 'ru']
+        && d.answers is string && d.answers.size() > 1 && d.answers.size() <= 20000
+        && d.consent == true
+        && d.status == 'new'
+        && d.createdAt == request.time;
+    }
+
+    // ---------- public content: anyone reads, only admins write ----------
+    match /settings/{docId}          { allow read: if true; allow write: if isAdmin(); }
+    match /seasons/{docId}           { allow read: if true; allow write: if isAdmin(); }
+    match /committees/{docId}        { allow read: if true; allow write: if isAdmin(); }
+    match /team/{docId}              { allow read: if true; allow write: if isAdmin(); }
+    match /awards/{docId}            { allow read: if true; allow write: if isAdmin(); }
+    match /gallery/{docId}           { allow read: if true; allow write: if isAdmin(); }
+    match /faq/{docId}               { allow read: if true; allow write: if isAdmin(); }
+    match /registrationRoles/{docId} { allow read: if true; allow write: if isAdmin(); }
+
+    // ---------- registrations: private ----------
+    match /registrations/{docId} {
+      allow create: if registrationOpen() && validRegistration();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Used by the admin page to check "am I on the allowlist?" right after sign-in.
+    match /_admin/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Anything not listed above is closed to everyone.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

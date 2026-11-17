@@ -1,0 +1,200 @@
+{
+  "meta": {
+    "title": "SIFMUN · Strategic International Forum Model United Nations",
+    "description": "A Model United Nations forum in Fergana, Uzbekistan, held in English, Uzbek and Russian. Season III is coming."
+  },
+  "count": [
+    "Zero",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten"
+  ],
+  "nav": {
+    "home": "SIFMUN home",
+    "history": "History",
+    "team": "Team",
+    "register": "Register",
+    "joinTelegram": "Join Telegram",
+    "skip": "Skip to content",
+    "menu": "Menu",
+    "close": "Close",
+    "language": "Language"
+  },
+  "floor": "The floor is yours.",
+  "cta": {
+    "joinOurTelegram": "Join our Telegram",
+    "register": "Register"
+  },
+  "hero": {
+    "kicker": "SIFMUN · FERGANA · UZBEKISTAN",
+    "b1": "The world is in session.",
+    "b2": "Take a country's seat. Argue its case.",
+    "b3": "English. Oʻzbekcha. Русский.",
+    "b3sub": "Three working languages.",
+    "b4": "{seasons} seasons. {participants} participants. One valley.",
+    "b5sub": "Season III is coming to {venue}.",
+    "staticSub": "A Model United Nations forum in Fergana, held in English, Uzbek and Russian. Season III is coming.",
+    "seePast": "See past seasons",
+    "scroll": "Scroll"
+  },
+  "about": {
+    "label": "SIFMUN/ABOUT",
+    "title": "A forum that speaks three languages.",
+    "p1": "SIFMUN is the Strategic International Forum Model United Nations, based in Fergana, Uzbekistan. For one day, students become delegates. Each one takes a country, learns its position, and defends it in committee.",
+    "p2": "Every session runs in English, Uzbek and Russian, so you can speak in the language you think in.",
+    "tilesCaption": "How every speech begins.",
+    "photoAlt": "Organiser, chair and delegate badges held together in a circle"
+  },
+  "s3": {
+    "label": "SIFMUN/S.III",
+    "title": "Season III is coming.",
+    "dateTba": "Date to be announced",
+    "venue": "Venue",
+    "date": "Date",
+    "p": "Registration opens soon. The date lands in our Telegram first.",
+    "days": "days",
+    "hours": "hours",
+    "minutes": "minutes",
+    "seconds": "seconds"
+  },
+  "numbers": {
+    "seasons": [
+      "season",
+      "seasons"
+    ],
+    "participants": [
+      "participant",
+      "participants"
+    ],
+    "committees": [
+      "committee",
+      "committees"
+    ],
+    "languages": [
+      "language",
+      "languages"
+    ],
+    "since": "Since February 2026.",
+    "conferences": [
+      "conference",
+      "conferences"
+    ]
+  },
+  "committees": {
+    "label": "SIFMUN/COMMITTEES",
+    "title": "{n} committees so far.",
+    "p": "Each one models a real international body.",
+    "seeEvery": "See every season",
+    "ranOne": "Season {a}",
+    "ranTwo": "Seasons {a} and {b}",
+    "ranMany": "Seasons {list}"
+  },
+  "past": {
+    "label": "SIFMUN/RECORD",
+    "title": "{n} seasons behind us.",
+    "season": "Season {roman}",
+    "participants": "{n} participants",
+    "readHistory": "Read the history",
+    "coverAlt": "Photo from Season {roman}"
+  },
+  "placard": {
+    "title": "Raise your placard.",
+    "p": "In committee, this is how you ask for the floor. Press and hold.",
+    "delegate": "DELEGATE",
+    "hold": "Press and hold to raise the placard",
+    "recognised": "Recognised. The floor is yours.",
+    "soon": "Registration for Season III opens soon. Be the first to know.",
+    "open": "Registration for Season III is open.",
+    "closed": "Registration for this season is closed. Follow us for the next one."
+  },
+  "footer": {
+    "line": "SIFMUN. Strategic International Forum Model United Nations. Fergana, Uzbekistan.",
+    "photo": "In a photo and want it taken down? Message us on Telegram and we will remove it.",
+    "rights": "© 2026 SIFMUN",
+    "pages": "Pages",
+    "follow": "Follow"
+  },
+  "history": {
+    "label": "SIFMUN/RECORD",
+    "title": "Every season, on the record.",
+    "p": "{n} conferences so far. Here is where we met and what we debated.",
+    "venue": "Venue",
+    "date": "Date",
+    "participants": "Participants",
+    "committees": "Committees",
+    "agenda": "Agenda",
+    "chairs": "Chairs",
+    "awards": "Awards",
+    "gallery": "Gallery",
+    "moments": "Moments",
+    "upcoming": "Upcoming",
+    "best": "Best Delegate",
+    "outstanding": "Outstanding Delegate",
+    "honorable": "Honourable Mention",
+    "openPhoto": "Open photo {n}",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next",
+    "photoOf": "Photo {n} of {total}",
+    "play": "Play clip",
+    "pause": "Pause clip"
+  },
+  "team": {
+    "label": "SIFMUN/TEAM",
+    "title": "The people behind the placards.",
+    "p": "Two organisers lead SIFMUN. Chairs, secretariat and volunteers join them each season.",
+    "chairs": "Chairs",
+    "secretariat": "Secretariat",
+    "volunteers": "Volunteers",
+    "noPhoto": "No photo yet",
+    "seasonTeams": "Season teams"
+  },
+  "register": {
+    "label": "SIFMUN/REG",
+    "title": "Register for Season III.",
+    "statusSoon": "Coming soon",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "textSoon": "Registration is not open yet. We will announce it on Telegram first.",
+    "textOpen": "Registration is open. Fill in the form below.",
+    "textClosed": "Registration for this season is closed. Follow us for the next one.",
+    "venue": "Venue",
+    "date": "Date",
+    "capacity": "Capacity",
+    "capacityValue": "{n} places",
+    "fee": "Fee",
+    "roles": "Roles",
+    "openInMaps": "Open in maps",
+    "mapTitle": "Map of the venue",
+    "applyAs": "Apply as",
+    "formClosed": "The form opens when registration opens.",
+    "consent": "I agree that SIFMUN may store my answers to organise the conference. Only the two organisers can see them.",
+    "under18": "If you are under 18, tell a parent or guardian that you are applying.",
+    "send": "Send application",
+    "sending": "Sending",
+    "success": "Application received. We will contact you with the next steps.",
+    "errRequired": "Please fill in this field.",
+    "errEmail": "Check this email address.",
+    "errPhone": "Check this phone number.",
+    "errGeneric": "Something went wrong. Try again in a minute.",
+    "choice1": "First choice",
+    "choice2": "Second choice",
+    "choice3": "Third choice",
+    "select": "Select",
+    "faqTitle": "Questions delegates ask.",
+    "errLink": "Check this link.",
+    "errConsent": "Tick the box to continue.",
+    "required": "required"
+  },
+  "notFound": {
+    "title": "This page is not on the agenda.",
+    "back": "Back to the home page"
+  }
+}

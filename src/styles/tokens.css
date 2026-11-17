@@ -1,0 +1,57 @@
+/* SIFMUN design tokens. Source of truth: docs/design-package.md, section 2.
+   Every contrast pair noted here was computed (WCAG 2.x), not guessed. */
+:root {
+  /* 60%: the canvas */
+  --ivory: #f7f2e8;
+  --champagne: #ede3cf;
+
+  /* gold: lines, numerals, icons. As text only on green. */
+  --gold: #c9a961;
+  --gold-soft: #d9bd7e; /* small gold text on green: 6.85 on emerald, 5.29 on forest */
+  --gold-text: #7a5e28; /* gold-toned text on light: 5.44 on ivory, 4.77 on champagne */
+  --border-strong: #8c6d32; /* interactive borders on light: 4.33 / 3.79 (needs 3) */
+  --line: rgba(201, 169, 97, 0.6); /* decorative hairlines only */
+  --line-dark: rgba(201, 169, 97, 0.38);
+
+  /* 30%: deep green */
+  --emerald: #0e3b2e;
+  --forest: #1b4d3e;
+  --ink: #0a2a21; /* body text: 13.78 on ivory, 12.07 on champagne */
+  --ink-soft: #4c6259; /* secondary text: 5.88 on ivory, 5.47 on champagne */
+  --ivory-soft: #c4cabf; /* secondary text on emerald: 7.45 */
+
+  /* 10%: mandarin. CTA, focus, active language. Nowhere else. */
+  --mandarin: #e8842f; /* ink label on it: 5.69 */
+  --mandarin-hover: #f29a4e; /* ink label on it: 6.96 */
+  --mandarin-deep: #ad4f0e; /* focus ring and active marks on light: 4.82 / 4.23 */
+
+  /* type */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-body: 'Onest Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-hero: clamp(2.9rem, 7.4vw, 6.6rem);
+  --fs-h1: clamp(2.7rem, 6.2vw, 5.4rem);
+  --fs-h2: clamp(2.1rem, 4.3vw, 3.6rem);
+  --fs-h3: clamp(1.45rem, 2.2vw, 1.9rem);
+  --fs-lede: clamp(1.1rem, 1.5vw, 1.3rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9rem;
+  --fs-label: 0.72rem;
+
+  /* space */
+  --gutter: clamp(20px, 5vw, 72px);
+  --max: 1240px;
+  --section: clamp(84px, 12vw, 168px);
+  --nav-h: 68px;
+
+  /* motion: two curves, used everywhere */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 220ms;
+  --t-med: 520ms;
+  --t-slow: 900ms;
+
+  --tshadow-dark: 0 1px 2px rgba(4, 22, 17, 0.9), 0 3px 14px rgba(4, 22, 17, 0.7),
+    0 10px 44px rgba(4, 22, 17, 0.7);
+}

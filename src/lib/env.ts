@@ -1,0 +1,17 @@
+/* Tiny, dependency-free check used by the public pages. Keeping it apart from
+   lib/firebase.ts means the Firebase SDK is never part of the first download. */
+const env = import.meta.env
+
+export const firebaseConfig = {
+  apiKey: env.VITE_FIREBASE_API_KEY as string | undefined,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
+  projectId: env.VITE_FIREBASE_PROJECT_ID as string | undefined,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET as string | undefined,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID as string | undefined,
+  appId: env.VITE_FIREBASE_APP_ID as string | undefined,
+}
+
+export const firebaseReady = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId)
+
+/** Local emulators, for testing only: set VITE_USE_EMULATORS=1 in .env.development.local. */
+export const useEmulators = Boolean(env.DEV) && env.VITE_USE_EMULATORS === '1'
