@@ -32,7 +32,6 @@ export function Footer() {
         </div>
       </div>
       <div className="footer__base">
-        <p>{t('footer.photo')}</p>
         <p className="footer__rights">{t('footer.rights')}</p>
       </div>
     </footer>
