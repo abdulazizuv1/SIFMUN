@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties, ElementType, ReactNode } from 'react'
-import logoUrl from '../assets/brand/logo.svg'
+import logoUrl from '../assets/brand/logo-mark.png'
 import type { Photo } from '../data/types'
 import { useI18n } from '../i18n'
 import { onReducedMotionChange, prefersReducedMotion, useReveal } from '../lib/motion'
 
-/** The brand mark on an ivory seal, so it reads on light and on dark surfaces
-    and so the final logo can be dropped in without touching any layout. */
+/** The brand mark (the eagle and laurels of the SIFMUN logo) as a round seal with a gold ring.
+    LOGO SWAP POINT 1 of 2: src/assets/brand/logo-mark.png (round mark) and logo-full.webp (footer). */
 export function Seal({ size = 40 }: { size?: number }) {
   return (
     <span className="seal" style={{ '--seal': `${size}px` } as CSSProperties} aria-hidden="true">

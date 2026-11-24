@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useContent } from '../data/content'
 import { useI18n } from '../i18n'
-import { Seal } from './ui'
+import logoFull from '../assets/brand/logo-full.webp'
 
 export function Footer() {
   const { t } = useI18n()
@@ -11,7 +11,7 @@ export function Footer() {
       <div className="footer__grid">
         <div className="footer__brand">
           <Link to="/" className="footer__mark" aria-label={t('nav.home')}>
-            <Seal size={52} />
+            <img src={logoFull} alt="" width={132} height={132} loading="lazy" decoding="async" />
           </Link>
           <p>{t('footer.line')}</p>
         </div>

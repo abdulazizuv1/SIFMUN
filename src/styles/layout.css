@@ -562,3 +562,16 @@ html.menu-open {
     stroke-dashoffset: 0;
   }
 }
+
+/* The full logo sits on the same green as the footer, so it reads as printed on it. */
+.footer__mark {
+  display: block;
+  width: fit-content;
+}
+.footer__mark img {
+  display: block;
+  max-width: none;
+  width: 132px;
+  height: 132px;
+  margin: -14px 0 4px -14px;
+}
