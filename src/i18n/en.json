@@ -42,7 +42,8 @@
     "b5sub": "Season III is coming to {venue}.",
     "staticSub": "A Model United Nations forum in Fergana, held in English, Uzbek and Russian. Season III is coming.",
     "seePast": "See past seasons",
-    "scroll": "Scroll"
+    "scroll": "Scroll",
+    "loading": "Loading the film"
   },
   "about": {
     "label": "SIFMUN/ABOUT",

@@ -3,7 +3,8 @@ import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { useContent } from '../data/content'
 import { useI18n } from '../i18n'
-import { chooseFilm, filmIfReady, mountScrub, preloadFilm, scrubAllowed, watchGates } from '../lib/scrub'
+import { chooseFilm, filmIfReady, mountScrub, onFilmProgress, preloadFilm, scrubAllowed, watchGates } from '../lib/scrub'
+import type { RefObject } from 'react'
 import { MunButton } from './Modal'
 import { PrimaryCta } from './Nav'
 import { StaticHero } from './StaticHero'
@@ -12,14 +13,15 @@ import { TriVoice } from './TriVoice'
 /* The scroll film: one continuous 18 second shot of a golden eagle descending from
    the edge of the atmosphere to the valley, scrubbed by scroll.
 
-   The film only appears once it has downloaded completely. Until then visitors get
-   the journey's last scene as a still (EndingHero), so nobody waits on a slow link.
+   The film only appears once it has downloaded completely. Until then visitors see
+   its first frame as a still with the first caption, and a ring at the bottom that
+   fills as the film arrives (StartHero). The film then takes over on the very same
+   frame, so the switch cannot be seen.
 
    The films and stills are swap points: replace the files in public/media/hero/.
    The full film is 1280px wide (about 1.9 MB), the lite one 854px (about 0.9 MB). */
 const FILM_FULL = { url: '/media/hero/hero-scrub.mp4', bytes: 1899254 }
 const FILM_LITE = { url: '/media/hero/hero-scrub-lite.mp4', bytes: 939844 }
-const ENDING = '/media/hero/hero-ending.webp'
 const POSTER = '/media/hero/hero-poster.webp'
 const STILLS = [
   { at: 0.42, src: '/media/hero/hero-fog.webp' },
@@ -63,14 +65,16 @@ function Words({ text, spread = 0.5, langs }: { text: string; spread?: number; l
   )
 }
 
-function Film({ src }: { src: string }) {
+function Film({ src, skipIntro }: { src: string; skipIntro: boolean }) {
   const { t, word, numWord } = useI18n()
   const c = useContent()
   const root = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!root.current) return
-    return mountScrub(root.current, { src, poster: POSTER, filmEnd: FILM_END, navFlip: NAV_FLIP })
+    return mountScrub(root.current, { src, poster: POSTER, filmEnd: FILM_END, navFlip: NAV_FLIP, skipIntro })
+    // skipIntro only matters on the first mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src])
 
   const seasonsN = c.pastSeasons.length
@@ -84,7 +88,7 @@ function Film({ src }: { src: string }) {
   const halves = tally.match(/[^.]+\./g) ?? [tally]
 
   return (
-    <section className="hero hero--scrub hero--arrive" ref={root} aria-label="SIFMUN">
+    <section className="hero hero--scrub" ref={root} aria-label="SIFMUN">
       <div className="scrub__stage">
         <div className="scrub__media" aria-hidden="true">
           <div className="scrub__poster" />
@@ -96,21 +100,7 @@ function Film({ src }: { src: string }) {
         </div>
 
         {/* 1. Dawn: the line comes into focus like arriving light. */}
-        <div className="band band--left band--dawn" data-band data-a={BANDS.dawn[0]} data-b={BANDS.dawn[1]} data-ramp="1">
-          <div className="band__inner">
-            <p className="hero__kicker band__kicker">{t('hero.kicker')}</p>
-            <h1 className="band__title band__title--xl focus">
-              <span className="visually-hidden">{t('hero.b1')}</span>
-              <span className="focus__soft" aria-hidden="true">
-                {t('hero.b1')}
-              </span>
-              <span className="focus__sharp" aria-hidden="true">
-                {t('hero.b1')}
-              </span>
-            </h1>
-            <MunButton className="munbtn--light band__mun" />
-          </div>
-        </div>
+        <Dawn band />
 
         {/* 2. The dive: words drift down with the eagle. */}
         <div className="band band--left band--dive" data-band data-a={BANDS.dive[0]} data-b={BANDS.dive[1]}>
@@ -194,13 +184,33 @@ function Settle({ band = false }: { band?: boolean }) {
   )
 }
 
-/** One screen: the last scene of the film as a still, with its captions settled. */
-function EndingHero() {
-  const root = useRef<HTMLElement>(null)
+/** The first caption: kicker, the headline coming into focus, and What is MUN. */
+function Dawn({ band = false }: { band?: boolean }) {
+  const { t } = useI18n()
+  const bandProps = band ? { 'data-band': true, 'data-a': BANDS.dawn[0], 'data-b': BANDS.dawn[1], 'data-ramp': '1' } : {}
+  return (
+    <div className={`band band--left band--dawn ${band ? '' : 'on'}`} {...bandProps}>
+      <div className="band__inner">
+        <p className="hero__kicker band__kicker">{t('hero.kicker')}</p>
+        <h1 className="band__title band__title--xl focus">
+          <span className="visually-hidden">{t('hero.b1')}</span>
+          <span className="focus__soft" aria-hidden="true">
+            {t('hero.b1')}
+          </span>
+          <span className="focus__sharp" aria-hidden="true">
+            {t('hero.b1')}
+          </span>
+        </h1>
+        <MunButton className="munbtn--light band__mun" />
+      </div>
+    </div>
+  )
+}
 
-  // The nav sits over a pale sky here: dark text while the hero is under it.
+/** While the hero sits under the nav, the nav text takes this tone. */
+function useNavTone(ref: RefObject<HTMLElement | null>, tone: 'light' | 'dark') {
   useEffect(() => {
-    const el = root.current
+    const el = ref.current
     if (!el) return
     const html = document.documentElement
     let on = false
@@ -208,7 +218,7 @@ function EndingHero() {
       const next = el.getBoundingClientRect().bottom > (document.querySelector<HTMLElement>('.nav')?.offsetHeight ?? 68)
       if (next === on) return
       on = next
-      if (next) html.dataset.heroTone = 'dark'
+      if (next) html.dataset.heroTone = tone
       else delete html.dataset.heroTone
     }
     apply()
@@ -217,48 +227,87 @@ function EndingHero() {
       window.removeEventListener('scroll', apply)
       delete html.dataset.heroTone
     }
-  }, [])
+  }, [ref, tone])
+}
 
+/** One screen while the film downloads: its first frame, the first caption settled,
+    and a ring that fills as the film arrives. If there will be no film (saved data,
+    2G, a failed download) the ring becomes the plain scroll cue. */
+function StartHero({ ringRef, waiting }: { ringRef: RefObject<SVGSVGElement | null>; waiting: boolean }) {
+  const { t } = useI18n()
+  const root = useRef<HTMLElement>(null)
+  useNavTone(root, 'light')
   return (
-    <section className="hero hero--ending" ref={root} aria-label="SIFMUN">
-      <div className="scrub__media" aria-hidden="true">
-        <img className="hero--ending__still" src={ENDING} alt="" width={1280} height={720} fetchPriority="high" decoding="async" />
-        <div className="scrub__grade" />
+    <section className="hero hero--start" ref={root} aria-label="SIFMUN">
+      <div className={`scrub__stage scrub__stage--still ${waiting ? '' : 'video-settled'}`}>
+        <div className="scrub__media" aria-hidden="true">
+          <img className="hero--start__still" src={POSTER} alt="" width={1280} height={720} fetchPriority="high" decoding="async" />
+          <div className="scrub__grade" />
+        </div>
+        <Dawn />
+        <div className="scrub__cue" aria-hidden="true">
+          <svg className="scrub__ring" ref={ringRef} viewBox="0 0 48 48" focusable="false">
+            <circle className="scrub__ring-track" cx="24" cy="24" r="20" />
+            <circle className="scrub__ring-fill" cx="24" cy="24" r="20" strokeDasharray="126" />
+            <path className="scrub__chevron" d="M17 21.5 24 28.5 31 21.5" />
+          </svg>
+          <span className="scrub__cue-label scrub__cue-label--wait">{t('hero.loading')}</span>
+          <span className="scrub__cue-label">{t('hero.scroll')}</span>
+        </div>
       </div>
-      <Settle />
     </section>
   )
 }
 
 /** The home hero.
     Phones, portrait tablets and reduced motion: the composed dawn still (StaticHero).
-    Everyone else: the last scene at once, then the scroll film, but only after it has
-    downloaded completely and only if the visitor is still at the top of the page,
-    so the page never jumps under someone who has started reading. */
+    Everyone else: the film's first frame at once (StartHero) with a progress ring, then
+    the scroll film once it has downloaded completely. The film takes over only while
+    the visitor is at the top of the page, so nothing jumps under someone reading below;
+    if they have scrolled away, it waits until they come back up. */
 export function Hero() {
   const allowed = useSyncExternalStore(watchGates, scrubAllowed, () => false)
   // Coming back to the home page in the same visit: the film is already here, show it at once.
   const [src, setSrc] = useState<string | null>(() => filmIfReady(FILM_FULL) ?? filmIfReady(FILM_LITE))
+  const [fromStill] = useState(() => src === null)
+  const [waiting, setWaiting] = useState(true)
+  const ring = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     if (!allowed || src) return
     const film = chooseFilm(FILM_FULL, FILM_LITE)
-    if (!film) return
+    if (!film) {
+      setWaiting(false)
+      return
+    }
     let alive = true
-    const started = window.scrollY
+    let removeScroll = () => {}
+    const stopProgress = onFilmProgress(film, (fraction) => {
+      ring.current?.style.setProperty('--ld', String(Math.round(126 * (1 - fraction))))
+    })
     preloadFilm(film)
       .then((url) => {
-        // Swap in only while the visitor is still at the top and has not moved.
-        if (alive && window.scrollY < 40 && Math.abs(window.scrollY - started) < 40) setSrc(url)
+        if (!alive) return
+        const atTop = () => window.scrollY < 40
+        if (atTop()) return setSrc(url)
+        const onScroll = () => {
+          if (!atTop()) return
+          window.removeEventListener('scroll', onScroll)
+          setSrc(url)
+        }
+        window.addEventListener('scroll', onScroll, { passive: true })
+        removeScroll = () => window.removeEventListener('scroll', onScroll)
       })
       .catch(() => {
-        /* no film this time: the still hero is a complete page */
+        if (alive) setWaiting(false) // no film this time: the still hero is a complete page
       })
     return () => {
       alive = false
+      stopProgress()
+      removeScroll()
     }
   }, [allowed, src])
 
   if (!allowed) return <StaticHero />
-  return src ? <Film src={src} /> : <EndingHero />
+  return src ? <Film src={src} skipIntro={fromStill} /> : <StartHero ringRef={ring} waiting={waiting} />
 }

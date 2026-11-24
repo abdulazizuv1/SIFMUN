@@ -63,9 +63,20 @@ export function filmIfReady(src: FilmSource): string | null {
 
 /** Downloads the whole film once per page load and resolves with an object URL.
     Navigating away and back reuses it. A stall of 20 seconds without a byte gives up. */
+const progressListeners = new Map<string, Set<(fraction: number) => void>>()
+
+/** Follows the download of a film: called with 0 to 1 as bytes arrive. Returns an unsubscribe. */
+export function onFilmProgress(src: FilmSource, cb: (fraction: number) => void): () => void {
+  let set = progressListeners.get(src.url)
+  if (!set) progressListeners.set(src.url, (set = new Set()))
+  set.add(cb)
+  return () => set.delete(cb)
+}
+
 export function preloadFilm(src: FilmSource): Promise<string> {
   const known = films.get(src.url)
   if (known) return known
+  const report = (fraction: number) => progressListeners.get(src.url)?.forEach((cb) => cb(fraction))
   const job = (async () => {
     const abort = new AbortController()
     let watchdog = window.setTimeout(() => abort.abort(), 20000)
@@ -74,15 +85,25 @@ export function preloadFilm(src: FilmSource): Promise<string> {
       if (!res.ok || !res.body) throw new Error(`film: HTTP ${res.status}`)
       // A single-page host answers a missing file with the HTML page and status 200.
       if (!(res.headers.get('content-type') ?? '').startsWith('video/')) throw new Error('film: not a video')
+      const total = Number(res.headers.get('Content-Length')) || src.bytes
       const reader = res.body.getReader()
       const chunks: BlobPart[] = []
+      let got = 0
+      let lastReport = 0
       for (;;) {
         const { done, value } = await reader.read()
         if (done) break
         clearTimeout(watchdog) // re-armed on every chunk
         watchdog = window.setTimeout(() => abort.abort(), 20000)
         chunks.push(value)
+        got += value.length
+        const now = performance.now()
+        if (now - lastReport > 100) {
+          lastReport = now
+          report(Math.min(0.99, got / total))
+        }
       }
+      report(1)
       const url = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }))
       readyFilms.set(src.url, url)
       return url
@@ -96,6 +117,8 @@ export function preloadFilm(src: FilmSource): Promise<string> {
 }
 
 export type ScrubOptions = {
+  /** The first caption is already on screen (the loading hero showed it): skip its entrance. */
+  skipIntro?: boolean
   /** Object URL of the fully downloaded film, from preloadFilm(). */
   src: string
   poster: string
@@ -222,7 +245,7 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
 
   /* ---------- captions, delta-gated ---------- */
   const loadStart = performance.now()
-  let loadK = 0
+  let loadK = o.skipIntro ? 1 : 0
   let moved = false
 
   const updateCaptions = (p: number) => {

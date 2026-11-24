@@ -43,7 +43,8 @@
     "b5sub": "III mavsum manzili: {venue}.",
     "staticSub": "Fargʻonadagi BMT modeli: ingliz, oʻzbek va rus tillarida. III mavsum yaqinda.",
     "seePast": "Oʻtgan mavsumlar",
-    "scroll": "Pastga aylantiring"
+    "scroll": "Pastga aylantiring",
+    "loading": "Film yuklanmoqda"
   },
   "about": {
     "label": "SIFMUN/ABOUT",
