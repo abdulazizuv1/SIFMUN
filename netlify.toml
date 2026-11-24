@@ -20,6 +20,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Photos and the hero films: cached for a day, so a returning visitor does not
+# download the film again. Not immutable: these files are swap points.
+[[headers]]
+  for = "/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
 [[headers]]
   for = "/*"
   [headers.values]

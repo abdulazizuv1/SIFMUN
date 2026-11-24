@@ -20,6 +20,18 @@ import './styles/modal.css'
 
 import App from './App.tsx'
 
+/* Photo skeletons. Every photo frame shimmers until its image arrives, then the image
+   fades in. One listener for the whole site (load and error do not bubble, so it
+   listens in the capture phase); the CSS lives in styles/modal.css. */
+const markLoaded = (e: Event) => {
+  const img = e.target
+  if (!(img instanceof HTMLImageElement)) return
+  img.classList.add('is-loaded')
+  img.parentElement?.classList.add('img-ready')
+}
+document.addEventListener('load', markLoaded, true)
+document.addEventListener('error', markLoaded, true)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

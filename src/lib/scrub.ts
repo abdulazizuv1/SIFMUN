@@ -5,8 +5,9 @@
    never re-renders anything.
 
    What it does:
-   - paints the poster first, then streams the film as a Blob (hosts without HTTP
-     Range support cannot seek a plain <video src>), with an honest progress ring;
+   - the film is downloaded in full first, as a Blob (hosts without HTTP Range
+     support cannot seek a plain <video src>), by preloadFilm() below; the film is
+     only mounted once that has finished, so nobody scrolls through a half-loaded film;
    - eases the displayed time toward the scroll position in a rAF loop that rests
      when converged and while the hero is off screen;
    - gates seeks so only one is ever in flight;
@@ -38,10 +39,65 @@ export function watchGates(cb: () => void): () => void {
   return () => all.forEach((m) => m.removeEventListener('change', cb))
 }
 
+/* ---------- the download, shared by every mount ---------- */
+
+export type FilmSource = { url: string; bytes: number }
+
+/** Picks the film for this connection: the light version on slow or metered links,
+    none at all when the visitor asked to save data or is on 2G. */
+export function chooseFilm(full: FilmSource, lite: FilmSource): FilmSource | null {
+  const c = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string; downlink?: number } }).connection
+  if (!c) return full // Safari and Firefox do not say: assume a normal connection
+  if (c.saveData || c.effectiveType === 'slow-2g' || c.effectiveType === '2g') return null
+  if (c.effectiveType === '3g' || (typeof c.downlink === 'number' && c.downlink < 4)) return lite
+  return full
+}
+
+const films = new Map<string, Promise<string>>()
+const readyFilms = new Map<string, string>()
+
+/** The object URL of a film that has finished downloading in this visit, if any. */
+export function filmIfReady(src: FilmSource): string | null {
+  return readyFilms.get(src.url) ?? null
+}
+
+/** Downloads the whole film once per page load and resolves with an object URL.
+    Navigating away and back reuses it. A stall of 20 seconds without a byte gives up. */
+export function preloadFilm(src: FilmSource): Promise<string> {
+  const known = films.get(src.url)
+  if (known) return known
+  const job = (async () => {
+    const abort = new AbortController()
+    let watchdog = window.setTimeout(() => abort.abort(), 20000)
+    try {
+      const res = await fetch(src.url, { priority: 'low', signal: abort.signal } as RequestInit)
+      if (!res.ok || !res.body) throw new Error(`film: HTTP ${res.status}`)
+      // A single-page host answers a missing file with the HTML page and status 200.
+      if (!(res.headers.get('content-type') ?? '').startsWith('video/')) throw new Error('film: not a video')
+      const reader = res.body.getReader()
+      const chunks: BlobPart[] = []
+      for (;;) {
+        const { done, value } = await reader.read()
+        if (done) break
+        clearTimeout(watchdog) // re-armed on every chunk
+        watchdog = window.setTimeout(() => abort.abort(), 20000)
+        chunks.push(value)
+      }
+      const url = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }))
+      readyFilms.set(src.url, url)
+      return url
+    } finally {
+      clearTimeout(watchdog)
+    }
+  })()
+  job.catch(() => films.delete(src.url)) // a failed download may be tried again on the next visit
+  films.set(src.url, job)
+  return job
+}
+
 export type ScrubOptions = {
-  video: string
-  /** Real byte size of the film: the fallback when the host sends no Content-Length. */
-  bytes: number
+  /** Object URL of the fully downloaded film, from preloadFilm(). */
+  src: string
   poster: string
   /** Scroll progress at which the film reaches its last frame. The rest of the scroll holds that frame. */
   filmEnd: number
@@ -64,7 +120,6 @@ type Band = {
 
 type Still = { el: HTMLElement; at: number; src: string; op: number }
 
-const RING = 126
 const smoothstep = (p: number, e0: number, e1: number) => {
   const t = clamp((p - e0) / (e1 - e0), 0, 1)
   return t * t * (3 - 2 * t)
@@ -75,7 +130,6 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
   const stage = root.querySelector<HTMLElement>('.scrub__stage')!
   const video = root.querySelector<HTMLVideoElement>('.scrub__video')!
   const posterEl = root.querySelector<HTMLElement>('.scrub__poster')!
-  const ring = root.querySelector<SVGElement>('.scrub__ring')
 
   const bandEls = [...root.querySelectorAll<HTMLElement>('[data-band]')]
   const bands: Band[] = bandEls.map((el, i) => {
@@ -104,8 +158,6 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
   let dead = false
   let failed = false
   let ready = false
-  let objectUrl = ''
-  const abort = new AbortController()
 
   /* ---------- progress ---------- */
   let range = 1
@@ -273,9 +325,7 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
     window.scrollTo({ top: top + range * mid })
   }
 
-  /* ---------- loading: poster first, then the film as a streamed Blob ---------- */
-  const setRing = (frac: number) => ring?.style.setProperty('--ld', String(Math.round(RING * (1 - frac))))
-
+  /* ---------- the film is already downloaded: just attach it ---------- */
   function failVideo() {
     if (failed || dead) return
     failed = true
@@ -286,64 +336,20 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
     updateCaptions(shown)
   }
 
-  async function loadFilm() {
-    let watchdog = window.setTimeout(() => abort.abort(), 20000)
-    try {
-      const res = await fetch(o.video, { priority: 'low', signal: abort.signal } as RequestInit)
-      if (!res.ok || !res.body) throw new Error(`film: HTTP ${res.status}`)
-      const total = Number(res.headers.get('Content-Length')) || o.bytes
-      const reader = res.body.getReader()
-      const chunks: BlobPart[] = []
-      let got = 0
-      let lastRing = 0
-      for (;;) {
-        const { done, value } = await reader.read()
-        if (done) break
-        clearTimeout(watchdog) // re-armed on every chunk: 20s without progress aborts
-        watchdog = window.setTimeout(() => abort.abort(), 20000)
-        chunks.push(value)
-        got += value.length
-        const frac = Math.min(1, got / total)
-        const now = performance.now()
-        if (now - lastRing > 100 || frac === 1) {
-          lastRing = now
-          setRing(frac)
-        }
-      }
-      clearTimeout(watchdog)
-      if (dead) return
-      setRing(1)
-      objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }))
-      video.src = objectUrl
-      video.load()
-      video.addEventListener(
-        'canplay',
-        () => {
-          if (dead || failed) return
-          ready = true
-          requestSeek(filmTime(shown))
-          stage.classList.add('video-ready', 'video-settled')
-        },
-        { once: true },
-      )
-    } catch {
-      clearTimeout(watchdog)
-      failVideo()
-    }
-  }
-
-  let started = false
-  const startFilm = () => {
-    if (started || dead) return
-    started = true
-    void loadFilm()
-  }
   posterEl.style.backgroundImage = `url('${o.poster}')`
-  const posterImg = new Image()
-  posterImg.onload = startFilm
-  posterImg.onerror = startFilm
-  posterImg.src = o.poster
-  const posterGuard = window.setTimeout(startFilm, 4000) // a hung poster never blocks the film
+  stage.classList.add('video-settled')
+  video.addEventListener(
+    'canplay',
+    () => {
+      if (dead || failed) return
+      ready = true
+      requestSeek(filmTime(shown))
+      stage.classList.add('video-ready')
+    },
+    { once: true },
+  )
+  video.src = o.src
+  video.load()
 
   /* ---------- wire up ---------- */
   video.addEventListener('seeked', onSeeked)
@@ -360,9 +366,6 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
   return () => {
     dead = true
     setTone('')
-    abort.abort()
-    clearTimeout(posterGuard)
-    posterImg.onload = posterImg.onerror = null
     if (rafId !== null) cancelAnimationFrame(rafId)
     io.disconnect()
     video.removeEventListener('seeked', onSeeked)
@@ -370,8 +373,8 @@ export function mountScrub(root: HTMLElement, o: ScrubOptions): () => void {
     root.removeEventListener('focusin', onFocusIn)
     window.removeEventListener('scroll', onScroll)
     window.removeEventListener('resize', onResize)
+    // The object URL belongs to preloadFilm() and is kept for the next visit to this page.
     video.removeAttribute('src')
     video.load()
-    if (objectUrl) URL.revokeObjectURL(objectUrl)
   }
 }

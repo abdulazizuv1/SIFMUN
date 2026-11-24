@@ -1,9 +1,9 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { useContent } from '../data/content'
 import { useI18n } from '../i18n'
-import { mountScrub, scrubAllowed, watchGates } from '../lib/scrub'
+import { chooseFilm, filmIfReady, mountScrub, preloadFilm, scrubAllowed, watchGates } from '../lib/scrub'
 import { MunButton } from './Modal'
 import { PrimaryCta } from './Nav'
 import { StaticHero } from './StaticHero'
@@ -12,10 +12,14 @@ import { TriVoice } from './TriVoice'
 /* The scroll film: one continuous 18 second shot of a golden eagle descending from
    the edge of the atmosphere to the valley, scrubbed by scroll.
 
-   The film and its stills are swap points. Replace the files in public/media/hero/
-   and, if the new film is a different size, update FILM_BYTES. */
-const FILM = '/media/hero/hero-scrub.mp4'
-const FILM_BYTES = 5220170
+   The film only appears once it has downloaded completely. Until then visitors get
+   the journey's last scene as a still (EndingHero), so nobody waits on a slow link.
+
+   The films and stills are swap points: replace the files in public/media/hero/.
+   The full film is 1280px wide (about 1.9 MB), the lite one 854px (about 0.9 MB). */
+const FILM_FULL = { url: '/media/hero/hero-scrub.mp4', bytes: 1899254 }
+const FILM_LITE = { url: '/media/hero/hero-scrub-lite.mp4', bytes: 939844 }
+const ENDING = '/media/hero/hero-ending.webp'
 const POSTER = '/media/hero/hero-poster.webp'
 const STILLS = [
   { at: 0.42, src: '/media/hero/hero-fog.webp' },
@@ -59,15 +63,15 @@ function Words({ text, spread = 0.5, langs }: { text: string; spread?: number; l
   )
 }
 
-function Film() {
-  const { t, tl, date, word, numWord } = useI18n()
+function Film({ src }: { src: string }) {
+  const { t, word, numWord } = useI18n()
   const c = useContent()
   const root = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!root.current) return
-    return mountScrub(root.current, { video: FILM, bytes: FILM_BYTES, poster: POSTER, filmEnd: FILM_END, navFlip: NAV_FLIP })
-  }, [])
+    return mountScrub(root.current, { src, poster: POSTER, filmEnd: FILM_END, navFlip: NAV_FLIP })
+  }, [src])
 
   const seasonsN = c.pastSeasons.length
   const tally = t('hero.b4', {
@@ -78,10 +82,9 @@ function Film() {
   })
   // "Two seasons. 190 participants. One valley." parts into its sentences.
   const halves = tally.match(/[^.]+\./g) ?? [tally]
-  const venue = c.upcoming ? tl(c.upcoming.venue) : ''
 
   return (
-    <section className="hero hero--scrub" ref={root} aria-label="SIFMUN">
+    <section className="hero hero--scrub hero--arrive" ref={root} aria-label="SIFMUN">
       <div className="scrub__stage">
         <div className="scrub__media" aria-hidden="true">
           <div className="scrub__poster" />
@@ -145,31 +148,10 @@ function Film() {
         </div>
 
         {/* 5. At rest over the valley: the three voices, then the invitation. */}
-        <div className="band band--settle" data-band data-a={BANDS.rest[0]} data-b={BANDS.rest[1]} data-ramp="0.05">
-          <div className="settle__top">
-            <TriVoice textKey="floor" as="h2" className="hero__title settle__title" hold />
-          </div>
-          <div className="settle__bottom">
-            <p className="settle__sub">{venue ? t('hero.b5sub', { venue }) : t('s3.title')}</p>
-            <div className="settle__actions">
-              <PrimaryCta long />
-              <Link to="/history" className="link link--light">
-                {t('hero.seePast')}
-              </Link>
-            </div>
-            {c.upcoming && (
-              <p className="hero__meta settle__meta">
-                <span>{t('s3.label')}</span>
-                {c.upcoming.date ? date(c.upcoming.date) : t('s3.dateTba')}
-              </p>
-            )}
-          </div>
-        </div>
+        <Settle band />
 
         <div className="scrub__cue" aria-hidden="true">
           <svg className="scrub__ring" viewBox="0 0 48 48" focusable="false">
-            <circle className="scrub__ring-track" cx="24" cy="24" r="20" />
-            <circle className="scrub__ring-fill" cx="24" cy="24" r="20" strokeDasharray="126" />
             <path className="scrub__chevron" d="M17 21.5 24 28.5 31 21.5" />
           </svg>
           <span className="scrub__cue-label">{t('hero.scroll')}</span>
@@ -179,9 +161,104 @@ function Film() {
   )
 }
 
-/** The home hero: the scroll film where it can be enjoyed, the composed still everywhere else.
-    The choice is live: rotate a tablet or flip reduced motion and it swaps. */
+/** The journey's closing scene: the three voices over the pale sky, the invitation
+    over the valley. In the film it is band 5; on its own it is the hero shown while
+    the film is still downloading. */
+function Settle({ band = false }: { band?: boolean }) {
+  const { t, tl, date } = useI18n()
+  const c = useContent()
+  const venue = c.upcoming ? tl(c.upcoming.venue) : ''
+  const bandProps = band ? { 'data-band': true, 'data-a': BANDS.rest[0], 'data-b': BANDS.rest[1], 'data-ramp': '0.05' } : {}
+  return (
+    <div className={`band band--settle ${band ? '' : 'on'}`} {...bandProps}>
+      <div className="settle__top">
+        <TriVoice textKey="floor" as={band ? 'h2' : 'h1'} className="hero__title settle__title" hold={band} />
+        <MunButton className="settle__mun" />
+      </div>
+      <div className="settle__bottom">
+        <p className="settle__sub">{venue ? t('hero.b5sub', { venue }) : t('s3.title')}</p>
+        <div className="settle__actions">
+          <PrimaryCta long />
+          <Link to="/history" className="link link--light">
+            {t('hero.seePast')}
+          </Link>
+        </div>
+        {c.upcoming && (
+          <p className="hero__meta settle__meta">
+            <span>{t('s3.label')}</span>
+            {c.upcoming.date ? date(c.upcoming.date) : t('s3.dateTba')}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** One screen: the last scene of the film as a still, with its captions settled. */
+function EndingHero() {
+  const root = useRef<HTMLElement>(null)
+
+  // The nav sits over a pale sky here: dark text while the hero is under it.
+  useEffect(() => {
+    const el = root.current
+    if (!el) return
+    const html = document.documentElement
+    let on = false
+    const apply = () => {
+      const next = el.getBoundingClientRect().bottom > (document.querySelector<HTMLElement>('.nav')?.offsetHeight ?? 68)
+      if (next === on) return
+      on = next
+      if (next) html.dataset.heroTone = 'dark'
+      else delete html.dataset.heroTone
+    }
+    apply()
+    window.addEventListener('scroll', apply, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', apply)
+      delete html.dataset.heroTone
+    }
+  }, [])
+
+  return (
+    <section className="hero hero--ending" ref={root} aria-label="SIFMUN">
+      <div className="scrub__media" aria-hidden="true">
+        <img className="hero--ending__still" src={ENDING} alt="" width={1280} height={720} fetchPriority="high" decoding="async" />
+        <div className="scrub__grade" />
+      </div>
+      <Settle />
+    </section>
+  )
+}
+
+/** The home hero.
+    Phones, portrait tablets and reduced motion: the composed dawn still (StaticHero).
+    Everyone else: the last scene at once, then the scroll film, but only after it has
+    downloaded completely and only if the visitor is still at the top of the page,
+    so the page never jumps under someone who has started reading. */
 export function Hero() {
-  const film = useSyncExternalStore(watchGates, scrubAllowed, () => false)
-  return film ? <Film /> : <StaticHero />
+  const allowed = useSyncExternalStore(watchGates, scrubAllowed, () => false)
+  // Coming back to the home page in the same visit: the film is already here, show it at once.
+  const [src, setSrc] = useState<string | null>(() => filmIfReady(FILM_FULL) ?? filmIfReady(FILM_LITE))
+
+  useEffect(() => {
+    if (!allowed || src) return
+    const film = chooseFilm(FILM_FULL, FILM_LITE)
+    if (!film) return
+    let alive = true
+    const started = window.scrollY
+    preloadFilm(film)
+      .then((url) => {
+        // Swap in only while the visitor is still at the top and has not moved.
+        if (alive && window.scrollY < 40 && Math.abs(window.scrollY - started) < 40) setSrc(url)
+      })
+      .catch(() => {
+        /* no film this time: the still hero is a complete page */
+      })
+    return () => {
+      alive = false
+    }
+  }, [allowed, src])
+
+  if (!allowed) return <StaticHero />
+  return src ? <Film src={src} /> : <EndingHero />
 }

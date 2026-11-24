@@ -530,3 +530,51 @@ html.modal-open {
   display: grid;
   gap: 28px;
 }
+
+/* ---------- photo skeletons ---------- */
+/* A soft light sweeps across the empty frame until the photo is in, then the photo fades in.
+   main.tsx marks the image (.is-loaded) and its frame (.img-ready). */
+@keyframes skeleton-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+.picture:not(.img-ready),
+.gallery__thumb:not(.img-ready),
+.clip:not(.img-ready) {
+  background-color: var(--champagne);
+  background-image: linear-gradient(100deg, rgba(255, 253, 248, 0) 30%, rgba(255, 253, 248, 0.75) 50%, rgba(255, 253, 248, 0) 70%);
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+.picture img,
+.gallery__thumb img,
+.hero__still img {
+  opacity: 0;
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 1.2s var(--ease-out);
+}
+.picture img.is-loaded,
+.gallery__thumb img.is-loaded,
+.hero__still img.is-loaded {
+  opacity: 1;
+}
+.clip video {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+.clip.img-ready video {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .picture:not(.img-ready),
+  .gallery__thumb:not(.img-ready),
+  .clip:not(.img-ready) {
+    animation: none;
+  }
+}

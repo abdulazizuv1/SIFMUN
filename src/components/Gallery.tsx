@@ -118,6 +118,19 @@ export function Clip({ item }: { item: GalleryItem }) {
   const { t, tl } = useI18n()
   const video = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
+  const frame = useRef<HTMLElement>(null)
+
+  // A poster has no load event of its own: load it once as an image to end the skeleton.
+  useEffect(() => {
+    const img = new Image()
+    const done = () => frame.current?.classList.add('img-ready')
+    img.onload = done
+    img.onerror = done
+    img.src = item.photo.src
+    return () => {
+      img.onload = img.onerror = null
+    }
+  }, [item.photo.src])
 
   const toggle = () => {
     const v = video.current
@@ -127,7 +140,7 @@ export function Clip({ item }: { item: GalleryItem }) {
   }
 
   return (
-    <figure className="clip frame" style={{ aspectRatio: `${item.photo.width} / ${item.photo.height}` }}>
+    <figure ref={frame} className="clip frame" style={{ aspectRatio: `${item.photo.width} / ${item.photo.height}` }}>
       <video
         ref={video}
         src={item.video}

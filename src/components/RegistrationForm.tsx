@@ -35,7 +35,6 @@ export function RegistrationForm() {
   const [roleId, setRoleId] = useState(roles[0]?.id ?? '')
   const [values, setValues] = useState<Record<string, Value>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [consent, setConsent] = useState(false)
   const [trap, setTrap] = useState('') // honeypot: people never see or fill this field
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const doneRef = useRef<HTMLParagraphElement>(null)
@@ -66,7 +65,6 @@ export function RegistrationForm() {
       const message = check(q)
       if (message) found[q.id] = message
     }
-    if (!consent) found.consent = t('register.errConsent')
     setErrors(found)
     const first = Object.keys(found)[0]
     if (first) {
@@ -113,6 +111,7 @@ export function RegistrationForm() {
         seasonNumber: c.settings.upcomingSeason,
         lang,
         answers: JSON.stringify(answers),
+        // The consent question in the form (photos and fee) is required, so a sent form always carries consent.
         consent: true,
         status: 'new',
         createdAt: serverTimestamp(),
@@ -312,29 +311,6 @@ export function RegistrationForm() {
           Website
           <input type="text" name="website" tabIndex={-1} autoComplete="off" value={trap} onChange={(e) => setTrap(e.target.value)} />
         </label>
-      </div>
-
-      <div className="regform__consent">
-        <label className="regform__opt">
-          <input
-            type="checkbox"
-            id={`${formId}-consent`}
-            checked={consent}
-            aria-invalid={Boolean(errors.consent) || undefined}
-            aria-describedby={errors.consent ? `${formId}-consent-err` : undefined}
-            onChange={(e) => {
-              setConsent(e.target.checked)
-              if (errors.consent) setErrors((prev) => ({ ...prev, consent: '' }))
-            }}
-          />
-          <span>{t('register.consent')}</span>
-        </label>
-        {errors.consent && (
-          <p id={`${formId}-consent-err`} className="regform__err">
-            {errors.consent}
-          </p>
-        )}
-        <p className="regform__small">{t('register.under18')}</p>
       </div>
 
       {state === 'error' && (
