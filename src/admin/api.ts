@@ -29,7 +29,7 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
-import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS } from '../data/season3'
+import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS, SEASON3_VENUE } from '../data/season3'
 import { seed } from '../data/seed'
 import type { ApplicationStatus, Photo, Registration } from '../data/types'
 import { COL, SETTINGS_DOC, app, db, useEmulators } from '../lib/firebase'
@@ -153,7 +153,7 @@ export async function appliedUpdates(): Promise<Record<string, unknown>> {
   return snap.exists() ? snap.data() : {}
 }
 
-/** Season III: date, fee, six committees with their languages, the delegate form, FAQ answers, and registration Open. */
+/** Season III: date, fee, six committees with their languages, the delegate form, FAQ answers, venue photos, and registration Open. */
 export async function applySeason3Update(): Promise<void> {
   const batch = writeBatch(db!)
   for (const c of SEASON3_NEW_COMMITTEES) {
@@ -164,6 +164,11 @@ export async function applySeason3Update(): Promise<void> {
   batch.set(doc(db!, COL.seasons, 'season-3'), { date: SEASON3_DATE, committees: SEASON3_COMMITTEES }, { merge: true })
   batch.set(doc(db!, COL.roles, 'delegate'), { questions: SEASON3_QUESTIONS, active: true }, { merge: true })
   for (const f of SEASON3_FAQ) batch.set(doc(db!, COL.faq, f.id), { answer: f.answer }, { merge: true })
+  for (const g of SEASON3_VENUE) {
+    const data = stripUndefined(g as unknown as Record<string, unknown>)
+    delete data.id
+    batch.set(doc(db!, COL.gallery, g.id), data, { merge: true })
+  }
   batch.set(doc(db!, ...SETTINGS_DOC), { fee: SEASON3_FEE, registrationStatus: 'open', upcomingSeason: 3 }, { merge: true })
   batch.set(doc(db!, ...UPDATES_DOC), { [SEASON3_UPDATE]: serverTimestamp() }, { merge: true })
   await batch.commit()

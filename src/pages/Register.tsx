@@ -1,4 +1,6 @@
 import type { CSSProperties } from 'react'
+import { Gallery } from '../components/Gallery'
+import { MunButton } from '../components/Modal'
 import { PrimaryCta } from '../components/Nav'
 import { RegistrationForm } from '../components/RegistrationForm'
 import { TriVoice } from '../components/TriVoice'
@@ -18,6 +20,9 @@ export function Register() {
   const venue = upcoming ? tl(upcoming.venue) : ''
   const fee = tl(settings.fee)
   const roles = c.roles.filter((r) => r.active).sort((a, b) => a.order - b.order)
+  const venuePhotos = c.gallery
+    .filter((g) => g.kind === 'photo' && upcoming && g.seasonId === upcoming.id)
+    .sort((a, b) => a.order - b.order)
   const faq = [...c.faq].sort((a, b) => a.order - b.order).filter((f) => tl(f.question) && tl(f.answer))
 
   // The map: a pasted Google or OpenStreetMap embed wins; plain coordinates are the fallback.
@@ -43,7 +48,10 @@ export function Register() {
           <span className={`chip chip--${status}`}>{t(`register.status${statusKey}`)}</span>
           <span>{t(`register.text${statusKey}`)}</span>
         </p>
-        {status !== 'open' && <PrimaryCta long />}
+        <div className="pagehead__actions">
+          {status !== 'open' && <PrimaryCta long />}
+          <MunButton />
+        </div>
       </header>
 
       {/* Venue and facts: map card left, facts right */}
@@ -103,10 +111,23 @@ export function Register() {
         </div>
       </Reveal>
 
+      {/* The venue in photos */}
+      {venuePhotos.length > 0 && (
+        <Reveal as="section" className="section venuephotos" aria-labelledby="venue-photos-title">
+          <h2 id="venue-photos-title">{t('register.venuePhotos')}</h2>
+          <Gallery items={venuePhotos} />
+        </Reveal>
+      )}
+
       {/* Roles */}
       {roles.length > 0 && (
         <Reveal as="section" className="section roles" aria-labelledby="roles-title">
-          <h2 id="roles-title">{t('register.roles')}</h2>
+          <div className="roles__head">
+            <h2 id="roles-title">{t('register.roles')}</h2>
+            <p>
+              {t('register.newToMun')} <MunButton className="munbtn--inline" />
+            </p>
+          </div>
           <ul>
             {roles.map((r, k) => (
               <li key={r.id} className="rcard" style={i(k + 1)}>

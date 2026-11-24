@@ -204,7 +204,9 @@
     "required": "required",
     "committeeHint": "Choose one committee. Open \"About the committee\" to read what it does.",
     "partner": "Your partner’s full name, if you already have one",
-    "partnerHint": "This committee works in pairs: two delegates represent one country. Leave the field empty if you apply alone."
+    "partnerHint": "This committee works in pairs: two delegates represent one country. Leave the field empty if you apply alone.",
+    "venuePhotos": "The venue.",
+    "newToMun": "First time at a Model UN?"
   },
   "notFound": {
     "title": "This page is not on the agenda.",

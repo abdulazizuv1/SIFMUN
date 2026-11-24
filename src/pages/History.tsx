@@ -152,7 +152,7 @@ function SeasonBlock({ season }: { season: Season }) {
 
         {photos.length > 0 && (
           <div className="season__part" style={i(3)}>
-            <h3>{t('history.gallery')}</h3>
+            <h3>{t(upcoming ? 'register.venuePhotos' : 'history.gallery')}</h3>
             <Gallery items={photos} />
           </div>
         )}

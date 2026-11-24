@@ -10,7 +10,7 @@
    Uzbek, whatever language the site is in. Uzbek and Russian copy is a draft
    waiting for review by a native speaker. */
 import type { L } from '../i18n'
-import type { Committee, FaqItem, Question, SeasonCommittee } from './types'
+import type { Committee, FaqItem, GalleryItem, Question, SeasonCommittee } from './types'
 
 export const SEASON3_DATE = '2027-01-03'
 
@@ -220,5 +220,76 @@ export const SEASON3_FAQ: Pick<FaqItem, 'id' | 'answer'>[] = [
       uz: 'Shu sahifadagi shaklni toʻldiring. Arizangiz qabul qilingach, 100 000 soʻm ishtirok badali haqida siz bilan bogʻlanamiz.',
       ru: 'Заполните форму на этой странице. После одобрения заявки мы свяжемся с вами по поводу взноса за участие, 100 000 сум.',
     },
+  },
+]
+
+const venuePhoto = (name: string, width: number, height: number) => ({
+  src: `/media/venue/${name}.webp`,
+  thumb: `/media/venue/${name}-thumb.webp`,
+  width,
+  height,
+})
+
+/** Photos of Fergana Digital Hub, the Season III venue. On the Register page and in Season III on History. */
+export const SEASON3_VENUE: GalleryItem[] = [
+  {
+    id: 's3-venue-building',
+    seasonId: 'season-3',
+    kind: 'photo',
+    photo: venuePhoto('fdh-building', 1440, 1920),
+    alt: {
+      en: 'Fergana Digital Hub from the outside: a glass tower and a long glass wing',
+      uz: 'Fergana Digital Hub tashqaridan: shisha minora va uzun shisha qanot',
+      ru: 'Fergana Digital Hub снаружи: стеклянная башня и длинное стеклянное крыло',
+    },
+    order: 1,
+  },
+  {
+    id: 's3-venue-round-hall',
+    seasonId: 'season-3',
+    kind: 'photo',
+    photo: venuePhoto('fdh-round-hall', 960, 1280),
+    alt: {
+      en: 'A round conference table under a gold ring chandelier',
+      uz: 'Oltin halqali qandil ostidagi dumaloq konferensiya stoli',
+      ru: 'Круглый стол для заседаний под золотой люстрой-кольцом',
+    },
+    order: 2,
+  },
+  {
+    id: 's3-venue-boardroom',
+    seasonId: 'season-3',
+    kind: 'photo',
+    photo: venuePhoto('fdh-boardroom', 960, 1280),
+    alt: {
+      en: 'A long meeting table with chairs on both sides',
+      uz: 'Ikki tomonida stullar turgan uzun majlis stoli',
+      ru: 'Длинный стол для заседаний со стульями по обе стороны',
+    },
+    order: 3,
+  },
+  {
+    id: 's3-venue-atrium',
+    seasonId: 'season-3',
+    kind: 'photo',
+    photo: venuePhoto('fdh-atrium', 960, 1280),
+    alt: {
+      en: 'The atrium seen from below, open to a glass roof',
+      uz: 'Pastdan koʻrinish: shisha tomli atrium',
+      ru: 'Атриум снизу, под стеклянной крышей',
+    },
+    order: 4,
+  },
+  {
+    id: 's3-venue-hall',
+    seasonId: 'season-3',
+    kind: 'photo',
+    photo: venuePhoto('fdh-hall', 960, 1280),
+    alt: {
+      en: 'A wide open hall with rows of tables and large windows',
+      uz: 'Stollar qatorlari va katta derazalari bor keng zal',
+      ru: 'Просторный зал с рядами столов и большими окнами',
+    },
+    order: 5,
   },
 ]

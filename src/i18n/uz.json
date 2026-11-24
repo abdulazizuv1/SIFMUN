@@ -200,7 +200,9 @@
     "required": "majburiy",
     "committeeHint": "Bitta qoʻmitani tanlang. U nima bilan shugʻullanishini bilish uchun «Qoʻmita haqida» tugmasini bosing.",
     "partner": "Sherigingiz boʻlsa, uning toʻliq ismi",
-    "partnerHint": "Bu qoʻmita juftlikda ishlaydi: bitta davlatni ikki delegat vakil qiladi. Yakka topshirsangiz, maydonni boʻsh qoldiring."
+    "partnerHint": "Bu qoʻmita juftlikda ishlaydi: bitta davlatni ikki delegat vakil qiladi. Yakka topshirsangiz, maydonni boʻsh qoldiring.",
+    "venuePhotos": "Oʻtkaziladigan joy.",
+    "newToMun": "BMT modelida birinchi martami?"
   },
   "notFound": {
     "title": "Bu sahifa kun tartibida yoʻq.",

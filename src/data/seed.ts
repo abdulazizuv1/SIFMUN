@@ -6,7 +6,7 @@
    names of the organisers) stay empty, and the public site hides empty sections.
    Uzbek and Russian text is a draft waiting for review by a native speaker. */
 import type { L } from '../i18n'
-import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS } from './season3'
+import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS, SEASON3_VENUE } from './season3'
 import type { Content, GalleryItem, Photo } from './types'
 
 const same = (text: string): L => ({ en: text, uz: text, ru: text })
@@ -348,7 +348,7 @@ export const seed: Content = {
 
   awards: [],
 
-  gallery,
+  gallery: [...gallery, ...SEASON3_VENUE],
 
   faq: [
     {

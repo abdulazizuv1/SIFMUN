@@ -498,3 +498,35 @@ html.modal-open {
     transform: none;
   }
 }
+
+/* ---------- Register page: What is MUN, venue photos ---------- */
+.pagehead__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+.munbtn--inline {
+  min-height: 40px;
+  margin-left: 6px;
+  vertical-align: middle;
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+.munbtn--inline:hover {
+  background: var(--champagne);
+}
+.roles__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 32px;
+}
+.roles__head p {
+  color: var(--ink-soft);
+}
+.venuephotos {
+  display: grid;
+  gap: 28px;
+}
