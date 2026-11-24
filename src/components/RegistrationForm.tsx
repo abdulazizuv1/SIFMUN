@@ -3,6 +3,8 @@ import type { FormEvent } from 'react'
 import { useContent } from '../data/content'
 import type { Answer, Question } from '../data/types'
 import { localize, useI18n } from '../i18n'
+import { CommitteeModal, LANGUAGE_NAMES, committeeText } from './Modal'
+import type { CommitteeEntry } from './Modal'
 
 type Value = string | string[]
 
@@ -37,6 +39,7 @@ export function RegistrationForm() {
   const [trap, setTrap] = useState('') // honeypot: people never see or fill this field
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const doneRef = useRef<HTMLParagraphElement>(null)
+  const [about, setAbout] = useState<{ entry: CommitteeEntry; questionId: string } | null>(null)
 
   const role = roles.find((r) => r.id === roleId) ?? roles[0]
   if (!role) return <p className="formnote">{t('register.formClosed')}</p>
@@ -78,15 +81,24 @@ export function RegistrationForm() {
       return
     }
 
-    const answers: Answer[] = role.questions.map((q) => {
+    const answers: Answer[] = role.questions.flatMap((q) => {
       const v = values[q.id]
-      return {
+      const answer: Answer = {
         id: q.id,
         // English labels keep the export columns the same whatever language the applicant used.
         label: localize('en', q.label),
         type: q.type,
         value: (Array.isArray(v) ? v.filter(Boolean).join(', ') : (v ?? '')).trim(),
       }
+      if (q.type !== 'committees') return [answer]
+      // A double-delegation committee also asks for the partner's name.
+      const picked = committeeEntries.find((e) => e.committee.abbr === answer.value)
+      if (!picked?.sc.double) return [answer]
+      const partner = values[partnerKey(q.id)]
+      return [
+        answer,
+        { id: partnerKey(q.id), label: 'Partner (double delegation)', type: 'short', value: (typeof partner === 'string' ? partner : '').trim() },
+      ]
     })
 
     try {
@@ -120,7 +132,14 @@ export function RegistrationForm() {
     )
   }
 
-  const committeeOptions = c.committees.map((cm) => ({ value: cm.abbr, label: `${cm.abbr} · ${tl(cm.name)}` }))
+  // The committees on offer: the upcoming season's, or every committee if the season has none listed yet.
+  const committeeEntries: CommitteeEntry[] = c.upcomingCommittees.length
+    ? c.upcomingCommittees
+    : c.committees.map((committee) => ({
+        committee,
+        sc: { committeeId: committee.id, agenda: { en: '', uz: '', ru: '' }, chairIds: [], language: '', double: false, about: '' },
+      }))
+  const partnerKey = (questionId: string) => `${questionId}Partner`
 
   return (
     <form className="regform" onSubmit={submit} noValidate aria-labelledby={`${formId}-title`}>
@@ -205,32 +224,49 @@ export function RegistrationForm() {
                   </label>
                 ))}
               {q.type === 'committees' && (
-                <div className="regform__ranks">
-                  {[0, 1, 2].map((rank) => (
-                    <label key={rank}>
-                      <span>{t(`register.choice${rank + 1}`)}</span>
-                      <select
-                        id={rank === 0 ? id : undefined}
-                        value={many[rank] ?? ''}
-                        onChange={(e) => {
-                          const next = [many[0] ?? '', many[1] ?? '', many[2] ?? '']
-                          next[rank] = e.target.value
-                          set(q.id, next)
-                        }}
-                      >
-                        <option value="">{t('register.select')}</option>
-                        {committeeOptions
-                          // A committee already picked in another rank is not offered again.
-                          .filter((o) => o.value === many[rank] || !many.includes(o.value))
-                          .map((o) => (
-                            <option key={o.value} value={o.value}>
-                              {o.label}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
-                  ))}
-                </div>
+                <>
+                  <p className="regform__hint">{t('register.committeeHint')}</p>
+                  <div className="regform__committees">
+                    {committeeEntries.map((entry, i) => {
+                      const ct = committeeText(entry, lang)
+                      const value = entry.committee.abbr
+                      const on = text === value
+                      const working = entry.sc.language
+                      return (
+                        <div key={entry.committee.id} className={`cpick ${on ? 'is-on' : ''}`}>
+                          <label className="cpick__main">
+                            <input type="radio" id={i === 0 ? id : undefined} name={id} checked={on} onChange={() => set(q.id, value)} />
+                            <span className="cpick__abbr">{value}</span>
+                            <span className="cpick__name" lang={ct.lang}>
+                              {ct.name}
+                            </span>
+                            <span className="cpick__meta">
+                              {working && <span lang={working}>{LANGUAGE_NAMES[working]}</span>}
+                              {entry.sc.double && <span>{t('committees.double')}</span>}
+                            </span>
+                          </label>
+                          <button type="button" className="cpick__about" onClick={() => setAbout({ entry, questionId: q.id })}>
+                            {t('committees.about')}
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {committeeEntries.find((e) => e.committee.abbr === text)?.sc.double && (
+                    <div className="regform__partner">
+                      <label htmlFor={`${id}-partner`}>{t('register.partner')}</label>
+                      <input
+                        id={`${id}-partner`}
+                        type="text"
+                        maxLength={MAX.short}
+                        autoComplete="off"
+                        value={typeof values[partnerKey(q.id)] === 'string' ? (values[partnerKey(q.id)] as string) : ''}
+                        onChange={(e) => set(partnerKey(q.id), e.target.value)}
+                      />
+                      <p className="regform__hint">{t('register.partnerHint')}</p>
+                    </div>
+                  )}
+                </>
               )}
               {errorLine}
             </fieldset>
@@ -309,6 +345,26 @@ export function RegistrationForm() {
       <button className="btn" disabled={state === 'sending'}>
         {state === 'sending' ? t('register.sending') : t('register.send')}
       </button>
+
+      <CommitteeModal
+        entry={about?.entry ?? null}
+        seasonNumber={c.settings.upcomingSeason}
+        onClose={() => setAbout(null)}
+        action={
+          about && (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                set(about.questionId, about.entry.committee.abbr)
+                setAbout(null)
+              }}
+            >
+              {values[about.questionId] === about.entry.committee.abbr ? t('committees.chosen') : t('committees.choose')}
+            </button>
+          )
+        }
+      />
     </form>
   )
 }

@@ -255,6 +255,8 @@ function Control({ spec, value, onChange, ctx }: { spec: FieldSpec; value: unkno
   switch (spec.type) {
     case 'text':
       return <input type="text" value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} />
+    case 'long':
+      return <textarea rows={7} value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} />
     case 'number':
       return (
         <input

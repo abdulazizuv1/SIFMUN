@@ -593,3 +593,24 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* One-time content update, shown above the overview until it is applied. */
+.adm-card--update {
+  margin-bottom: 32px;
+  border-color: var(--mandarin);
+  box-shadow: inset 4px 0 0 var(--mandarin);
+}
+.adm-card--update h2 {
+  margin-bottom: 10px;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 500;
+}
+.adm-card--update ul {
+  margin: 8px 0 14px;
+  padding-left: 20px;
+  list-style: disc;
+}
+.adm-card--update li + li {
+  margin-top: 4px;
+}

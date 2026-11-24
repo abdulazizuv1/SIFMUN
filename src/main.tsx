@@ -16,6 +16,7 @@ import './styles/layout.css'
 import './styles/scrub.css'
 import './styles/home.css'
 import './styles/pages.css'
+import './styles/modal.css'
 
 import App from './App.tsx'
 

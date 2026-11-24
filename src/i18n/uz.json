@@ -90,7 +90,18 @@
     "seeEvery": "Barcha mavsumlar",
     "ranOne": "{a} mavsum",
     "ranTwo": "{a} va {b} mavsumlar",
-    "ranMany": "{list} mavsumlar"
+    "ranMany": "{list} mavsumlar",
+    "upcomingTitle": "{roman} mavsumda {nl} ta qoʻmita.",
+    "upcomingP": "Har bir qoʻmita bitta tilda ishlaydi. Qoʻmita nima bilan shugʻullanishini uning oʻz tilida oʻqish uchun uni oching.",
+    "about": "Qoʻmita haqida",
+    "workingLanguage": "Ish tili",
+    "format": "Format",
+    "double": "Ikki kishilik delegatsiya",
+    "agenda": "Kun tartibi",
+    "choose": "Shu qoʻmitani tanlash",
+    "chosen": "Tanlovingiz",
+    "close": "Yopish",
+    "apply": "Ariza topshirish"
   },
   "past": {
     "label": "SIFMUN/RECORD",
@@ -186,10 +197,33 @@
     "faqTitle": "Delegatlar soʻraydigan savollar.",
     "errLink": "Havolani tekshiring.",
     "errConsent": "Davom etish uchun belgini qoʻying.",
-    "required": "majburiy"
+    "required": "majburiy",
+    "committeeHint": "Bitta qoʻmitani tanlang. U nima bilan shugʻullanishini bilish uchun «Qoʻmita haqida» tugmasini bosing.",
+    "partner": "Sherigingiz boʻlsa, uning toʻliq ismi",
+    "partnerHint": "Bu qoʻmita juftlikda ishlaydi: bitta davlatni ikki delegat vakil qiladi. Yakka topshirsangiz, maydonni boʻsh qoldiring."
   },
   "notFound": {
     "title": "Bu sahifa kun tartibida yoʻq.",
     "back": "Bosh sahifaga qaytish"
+  },
+  "mun": {
+    "button": "MUN nima?",
+    "title": "Diplomat sifatida bir kun.",
+    "lede": "BMT modeli jiddiy oʻynaladigan oʻyin. Bir kunga siz talaba emas, delegatga aylanasiz: BMT organida bir davlat nomidan, haqiqiy dunyo hali hal qilmagan muammo haqida soʻzlaysiz.",
+    "s1t": "Lavha",
+    "s1p": "Konferensiyadan oldin sizga davlat va qoʻmita beriladi. Koʻpincha bu oʻz davlatingiz boʻlmaydi. Uning tarixi, ittifoqchilari va qizil chiziqlarini oʻrganasiz va uning nomidan javob bera oladigan boʻlasiz.",
+    "s2t": "Yoʻqlama",
+    "s2p": "Rais davlatlarni birma-bir chaqiradi. Siz lavhangizni koʻtarib javob berasiz: hozir. Shu daqiqadan boshlab zalda sizni ismingiz bilan emas, davlatingiz nomi bilan chaqirishadi.",
+    "s3t": "Soʻz",
+    "s3p": "Birinchi nutqingiz: davlatingiz pozitsiyasini aytish uchun taxminan bir daqiqa. Vaqt tugashi bilan bolgʻacha uriladi, shuning uchun har bir soʻz muhim.",
+    "s4t": "Kokus",
+    "s4p": "Keyin zal jonlanadi. Moderatsiyali kokusda rais soʻzni navbat bilan beradi. Moderatsiyasiz kokusda esa oʻrningizdan turasiz, ittifoqchilar topasiz, past ovozda bahslashasiz va rezolyutsiya bandini ovozga almashtirasiz.",
+    "s5t": "Rezolyutsiya",
+    "s5p": "Ittifoqchilar birgalikda rezolyutsiya loyihasini yozadi: dunyo nima qilishi kerak, band-band. Boshqalar unga tuzatish kiritadi, unga hujum qiladi va har bir satrini himoya qiladi.",
+    "s6t": "Ovoz berish",
+    "s6p": "Lavhalar koʻtariladi: tarafdor, qarshi, betaraf. Rezolyutsiya qabul qilinadi yoki rad etiladi, va siz diplomatiyaning haqiqiy bahosini his qilasiz.",
+    "s7t": "Yopilish",
+    "s7p": "Yopilish marosimida raislar har bir qoʻmitaning eng kuchli delegatlarini eʼlon qiladi. Har bir ishtirokchi sertifikat va soʻzlashning yangi mahorati bilan ketadi.",
+    "note": "Tajriba shart emas. Tayyorlanish, tinglash va soʻz olish kifoya."
   }
 }

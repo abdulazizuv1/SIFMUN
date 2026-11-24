@@ -94,7 +94,18 @@
     "seeEvery": "See every season",
     "ranOne": "Season {a}",
     "ranTwo": "Seasons {a} and {b}",
-    "ranMany": "Seasons {list}"
+    "ranMany": "Seasons {list}",
+    "upcomingTitle": "{n} {committeesWord} for Season {roman}.",
+    "upcomingP": "Each committee works in one language. Open one to read what it does, in the language it speaks.",
+    "about": "About the committee",
+    "workingLanguage": "Working language",
+    "format": "Format",
+    "double": "Double delegation",
+    "agenda": "Agenda",
+    "choose": "Choose this committee",
+    "chosen": "Your choice",
+    "close": "Close",
+    "apply": "Apply"
   },
   "past": {
     "label": "SIFMUN/RECORD",
@@ -190,10 +201,33 @@
     "faqTitle": "Questions delegates ask.",
     "errLink": "Check this link.",
     "errConsent": "Tick the box to continue.",
-    "required": "required"
+    "required": "required",
+    "committeeHint": "Choose one committee. Open \"About the committee\" to read what it does.",
+    "partner": "Your partner’s full name, if you already have one",
+    "partnerHint": "This committee works in pairs: two delegates represent one country. Leave the field empty if you apply alone."
   },
   "notFound": {
     "title": "This page is not on the agenda.",
     "back": "Back to the home page"
+  },
+  "mun": {
+    "button": "What is MUN?",
+    "title": "One day as a diplomat.",
+    "lede": "Model United Nations is a game played in earnest. For one day you stop being a student and become a delegate: you speak for a country, in a UN body, on a problem the real world has not solved yet.",
+    "s1t": "The placard",
+    "s1p": "Before the conference you receive a country and a committee. Often it is not your own country. You read its history, its allies and its red lines, until you can answer for it.",
+    "s2t": "Roll call",
+    "s2p": "The chair calls the countries one by one. You raise your placard and answer: present. From this moment nobody in the room calls you by your name, only by your country.",
+    "s3t": "The floor",
+    "s3p": "Your first speech: about a minute to tell the room where your country stands. The gavel falls when your time runs out, so every word has to count.",
+    "s4t": "Caucus",
+    "s4p": "Then the room comes alive. In a moderated caucus the chair gives the floor speech by speech. In an unmoderated caucus you leave your seat, find allies, argue in whispers and trade a clause for a vote.",
+    "s5t": "The resolution",
+    "s5p": "Allies write a draft resolution together: what the world should do, clause by clause. Others amend it, attack it and defend it, line by line.",
+    "s6t": "The vote",
+    "s6p": "Placards go up: for, against, abstain. The resolution passes or falls, and you feel what diplomacy really costs.",
+    "s7t": "Closing",
+    "s7p": "At the closing ceremony the chairs name the strongest delegates of each committee. Every participant leaves with a certificate, and with a new way of speaking.",
+    "note": "You do not need experience. You need to prepare, to listen and to take the floor."
   }
 }

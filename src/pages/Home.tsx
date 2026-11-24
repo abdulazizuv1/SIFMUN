@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { CommitteeCards } from '../components/CommitteeCards'
 import { Countdown } from '../components/Countdown'
 import { FlightLine } from '../components/Environment'
 import { Arrow, PrimaryCta } from '../components/Nav'
@@ -16,7 +17,8 @@ export function Home() {
   const c = useContent()
   const badges = c.gallery.find((g) => g.id === 's2-badges')?.photo ?? null
   const seasonsN = c.pastSeasons.length
-  const committeesN = c.committees.length
+  const committeesN = c.pastCommitteeCount
+  const nextN = c.upcomingCommittees.length
 
   const ran = (id: string) => {
     const nums = c.seasonsOfCommittee(id).map(toRoman)
@@ -118,7 +120,31 @@ export function Home() {
           <p className="numbers__since">{t('numbers.since')}</p>
         </Reveal>
 
-        {/* Committees: uneven 3 + 2 grid */}
+        {/* Committees. With an upcoming season: its committees as placards that open a
+            description. Without one: every committee so far, as photo cards. */}
+        {nextN > 0 && c.upcoming ? (
+          <Reveal as="section" className="section committees" aria-labelledby="committees-title">
+            <header className="split-head">
+              <div>
+                <DocLabel>{t('committees.label')}</DocLabel>
+                <h2 id="committees-title" style={i(1)}>
+                  {t('committees.upcomingTitle', {
+                    n: numWord(nextN),
+                    nl: numWord(nextN).toLocaleLowerCase(lang),
+                    committeesWord: word('numbers.committees', nextN),
+                    roman: toRoman(c.upcoming.number),
+                  })}
+                </h2>
+              </div>
+              <p style={i(2)}>{t('committees.upcomingP')}</p>
+            </header>
+            <CommitteeCards />
+            <Link to="/history" className="link">
+              {t('committees.seeEvery')}
+              <Arrow />
+            </Link>
+          </Reveal>
+        ) : (
         <Reveal as="section" className="section committees" aria-labelledby="committees-title">
           <header className="split-head">
             <div>
@@ -151,6 +177,7 @@ export function Home() {
             <Arrow />
           </Link>
         </Reveal>
+        )}
 
         {/* Past seasons: two wide offset cards */}
         {seasonsN > 0 && (

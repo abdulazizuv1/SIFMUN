@@ -6,6 +6,7 @@
    names of the organisers) stay empty, and the public site hides empty sections.
    Uzbek and Russian text is a draft waiting for review by a native speaker. */
 import type { L } from '../i18n'
+import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS } from './season3'
 import type { Content, GalleryItem, Photo } from './types'
 
 const same = (text: string): L => ({ en: text, uz: text, ru: text })
@@ -177,14 +178,16 @@ const gallery: GalleryItem[] = [
   },
 ]
 
-const sc = (committeeId: string) => ({ committeeId, agenda: { ...empty }, chairIds: [] })
+const sc = (committeeId: string) => ({ committeeId, agenda: { ...empty }, chairIds: [], language: '' as const, double: false, about: '' })
+
+const faqPatch = new Map(SEASON3_FAQ.map((f) => [f.id, f.answer]))
 
 export const seed: Content = {
   settings: {
-    registrationStatus: 'soon',
+    registrationStatus: 'open',
     upcomingSeason: 3,
     capacity: null,
-    fee: { ...empty },
+    fee: { ...SEASON3_FEE },
     // Fergana Digital Hub, from the Google Maps embed the organiser supplied.
     mapLat: 40.36612570850655,
     mapLng: 71.70611412236755,
@@ -223,10 +226,10 @@ export const seed: Content = {
       id: 'season-3',
       number: 3,
       status: 'upcoming',
-      date: null,
+      date: SEASON3_DATE,
       venue: same('Fergana Digital Hub'),
       participants: null,
-      committees: [],
+      committees: SEASON3_COMMITTEES,
       cover: null,
       coverAlt: { ...empty },
     },
@@ -313,6 +316,7 @@ export const seed: Content = {
       photo: P.s1Ecosoc,
       order: 5,
     },
+    ...SEASON3_NEW_COMMITTEES,
   ],
 
   team: [
@@ -431,7 +435,7 @@ export const seed: Content = {
       },
       order: 6,
     },
-  ],
+  ].map((f) => ({ ...f, answer: faqPatch.get(f.id) ?? f.answer })),
 
   roles: [
     {
@@ -443,7 +447,7 @@ export const seed: Content = {
         ru: 'Представляйте страну в одном комитете. Изучайте, выступайте, договаривайтесь, голосуйте.',
       },
       active: true,
-      questions: [],
+      questions: SEASON3_QUESTIONS,
       order: 1,
     },
     {

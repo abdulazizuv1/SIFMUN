@@ -29,6 +29,7 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
+import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS } from '../data/season3'
 import { seed } from '../data/seed'
 import type { ApplicationStatus, Photo, Registration } from '../data/types'
 import { COL, SETTINGS_DOC, app, db, useEmulators } from '../lib/firebase'
@@ -137,6 +138,35 @@ export async function importSeed(): Promise<number> {
   }
   await batch.commit()
   return count
+}
+
+// ---------- one-time content updates ----------
+
+/* A database that was filled before new facts arrived does not get them from the seed.
+   Each update below writes those facts once, from a button in the admin, and is
+   recorded in _admin/updates so the button disappears afterwards. */
+const UPDATES_DOC = ['_admin', 'updates'] as const
+export const SEASON3_UPDATE = 'season3Registration'
+
+export async function appliedUpdates(): Promise<Record<string, unknown>> {
+  const snap = await getDoc(doc(db!, ...UPDATES_DOC))
+  return snap.exists() ? snap.data() : {}
+}
+
+/** Season III: date, fee, six committees with their languages, the delegate form, FAQ answers, and registration Open. */
+export async function applySeason3Update(): Promise<void> {
+  const batch = writeBatch(db!)
+  for (const c of SEASON3_NEW_COMMITTEES) {
+    const data = stripUndefined(c as unknown as Record<string, unknown>)
+    delete data.id
+    batch.set(doc(db!, COL.committees, c.id), data, { merge: true })
+  }
+  batch.set(doc(db!, COL.seasons, 'season-3'), { date: SEASON3_DATE, committees: SEASON3_COMMITTEES }, { merge: true })
+  batch.set(doc(db!, COL.roles, 'delegate'), { questions: SEASON3_QUESTIONS, active: true }, { merge: true })
+  for (const f of SEASON3_FAQ) batch.set(doc(db!, COL.faq, f.id), { answer: f.answer }, { merge: true })
+  batch.set(doc(db!, ...SETTINGS_DOC), { fee: SEASON3_FEE, registrationStatus: 'open', upcomingSeason: 3 }, { merge: true })
+  batch.set(doc(db!, ...UPDATES_DOC), { [SEASON3_UPDATE]: serverTimestamp() }, { merge: true })
+  await batch.commit()
 }
 
 // ---------- registrations ----------

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { firebaseConfig, firebaseReady } from '../lib/env'
 import { seed } from './seed'
-import type { Committee, Content, Season } from './types'
+import type { Committee, Content, Season, SeasonCommittee } from './types'
 
 /* The public site reads all of its content from here.
    Order of sources, fastest first:
@@ -16,6 +16,10 @@ type Derived = {
   upcoming: Season | undefined
   totalParticipants: number
   committeeById: Map<string, Committee>
+  /** The upcoming season's committees, in the season's order, each joined with its committee. */
+  upcomingCommittees: { sc: SeasonCommittee; committee: Committee }[]
+  /** How many different committees have run so far. */
+  pastCommitteeCount: number
   /** Season numbers each committee ran in, oldest first. */
   seasonsOfCommittee: (committeeId: string) => number[]
   /** Asks the provider to read the database again (used after the admin saves). */
@@ -93,6 +97,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       upcoming,
       totalParticipants: pastSeasons.reduce((sum, s) => sum + (s.participants ?? 0), 0),
       committeeById,
+      upcomingCommittees: (upcoming?.committees ?? []).flatMap((sc) => {
+        const committee = committeeById.get(sc.committeeId)
+        return committee ? [{ sc, committee }] : []
+      }),
+      pastCommitteeCount: new Set(pastSeasons.flatMap((s) => s.committees.map((c) => c.committeeId))).size,
       seasonsOfCommittee: (id) =>
         pastSeasons.filter((s) => s.committees.some((c) => c.committeeId === id)).map((s) => s.number),
       refresh: () => setTick((n) => n + 1),

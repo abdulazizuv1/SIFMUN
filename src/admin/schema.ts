@@ -4,6 +4,7 @@ import { COL } from '../lib/firebase'
 
 export type FieldType =
   | 'text'
+  | 'long' // paragraph in one language
   | 'number'
   | 'date'
   | 'bool'
@@ -83,7 +84,7 @@ export const QUESTION_TYPES: Option[] = [
   { value: 'single', label: 'Один вариант' },
   { value: 'multiple', label: 'Несколько вариантов' },
   { value: 'dropdown', label: 'Выпадающий список' },
-  { value: 'committees', label: 'Комитеты по приоритету (1, 2, 3)' },
+  { value: 'committees', label: 'Выбор комитета (карточки комитетов предстоящего сезона)' },
   { value: 'link', label: 'Ссылка' },
 ]
 
@@ -121,7 +122,28 @@ export const SECTIONS: SectionSpec[] = [
         fields: [
           { key: 'committeeId', label: 'Комитет', type: 'ref', from: 'committees' },
           { key: 'agenda', label: 'Повестка', type: 'llong' },
-          { key: 'chairIds', label: 'Председатели', type: 'refs', from: 'team', hint: 'Сначала добавьте людей в разделе «Команда».' },
+          { key: 'chairIds', label: 'Председатели', type: 'refs', from: 'team', hint: 'Сначала добавьте людей в разделе «Команда».', optional: true },
+          {
+            key: 'language',
+            label: 'Рабочий язык комитета',
+            type: 'select',
+            optional: true,
+            options: [
+              { value: '', label: 'не указан' },
+              { value: 'en', label: 'English' },
+              { value: 'uz', label: 'Oʻzbekcha' },
+              { value: 'ru', label: 'Русский' },
+            ],
+            hint: 'Название и описание комитета показываются на этом языке, какой бы язык сайта ни выбрал посетитель.',
+          },
+          { key: 'double', label: 'Двойная делегация', type: 'bool', optional: true, hint: 'Каждую страну представляют два делегата. В форме появится поле для напарника.' },
+          {
+            key: 'about',
+            label: 'Описание комитета (на рабочем языке)',
+            type: 'long',
+            optional: true,
+            hint: 'Открывается в окне по кнопке на главной и в форме регистрации. Пустая строка между абзацами.',
+          },
         ],
       },
     ],

@@ -31,11 +31,20 @@ export type SiteSettings = {
   instagramHandle: string
 }
 
+/** A committee's working language at one season. Empty when it was not recorded. */
+export type WorkingLanguage = '' | 'en' | 'uz' | 'ru'
+
 export type SeasonCommittee = {
   committeeId: string
   agenda: L
   /** Ids of team members who chaired it. */
   chairIds: string[]
+  /** The language the committee works in that season. Its name and description show in this language. */
+  language: WorkingLanguage
+  /** Double delegation: every country is represented by two delegates working as a pair. */
+  double: boolean
+  /** What the committee is about, written in its working language (one text, not three). */
+  about: string
 }
 
 export type Season = {

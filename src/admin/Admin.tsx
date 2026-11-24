@@ -5,6 +5,9 @@ import type { User } from 'firebase/auth'
 import { useContent } from '../data/content'
 import { firebaseReady } from '../lib/firebase'
 import {
+  SEASON3_UPDATE,
+  appliedUpdates,
+  applySeason3Update,
   checkAdmin,
   deleteFiles,
   importSeed,
@@ -224,7 +227,7 @@ function Dashboard({ user }: { user: User }) {
         ) : !imported && section !== 'registrations' ? (
           <ImportCard onDone={afterSave} />
         ) : section === 'overview' ? (
-          <Overview lookup={lookup} onOpen={(key) => navigate(`/admin/${key}`)} />
+          <Overview lookup={lookup} onOpen={(key) => navigate(`/admin/${key}`)} onSaved={afterSave} />
         ) : section === 'settings' ? (
           <SettingsEditor value={settings ?? {}} lookup={lookup} onSaved={afterSave} />
         ) : section === 'registrations' ? (
@@ -282,9 +285,55 @@ function ImportCard({ onDone }: { onDone: () => Promise<void> }) {
   )
 }
 
-function Overview({ lookup, onOpen }: { lookup: Lookup; onOpen: (key: SectionKey) => void }) {
+function Season3Card({ onDone }: { onDone: () => Promise<void> }) {
+  const [state, setState] = useState<'checking' | 'ready' | 'done' | 'busy'>('checking')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    let alive = true
+    appliedUpdates()
+      .then((u) => alive && setState(u[SEASON3_UPDATE] ? 'done' : 'ready'))
+      .catch(() => alive && setState('ready'))
+    return () => {
+      alive = false
+    }
+  }, [])
+  if (state === 'checking' || state === 'done') return null
+  const run = async () => {
+    setState('busy')
+    setError('')
+    try {
+      await applySeason3Update()
+      await onDone()
+      setState('done')
+    } catch {
+      setError('Не получилось записать. Проверьте, что вы вошли под одним из двух админ-аккаунтов.')
+      setState('ready')
+    }
+  }
+  return (
+    <div className="adm-card adm-card--update">
+      <h2>Обновление: Сезон III, регистрация</h2>
+      <p>Одна кнопка запишет в базу всё, что подготовлено для третьего сезона:</p>
+      <ul>
+        <li>дата 3 января 2027 и взнос 100 000 сум;</li>
+        <li>шесть комитетов: ЕС (двойная делегация, русский), CEDAW, Security Council, General Assembly, INTERPOL (английский) и HRC (узбекский), с описаниями;</li>
+        <li>11 вопросов формы делегата, как в Google-форме;</li>
+        <li>новые ответы в FAQ про языки, дату и регистрацию;</li>
+        <li>статус регистрации: открыта.</li>
+      </ul>
+      <p>Вопросы роли «Делегат» будут заменены. Всё остальное потом можно править в разделах слева.</p>
+      {error && <p className="adm-error">{error}</p>}
+      <button type="button" className="adm-btn adm-btn--main" disabled={state === 'busy'} onClick={() => void run()}>
+        {state === 'busy' ? 'Записываю…' : 'Применить и открыть регистрацию'}
+      </button>
+    </div>
+  )
+}
+
+function Overview({ lookup, onOpen, onSaved }: { lookup: Lookup; onOpen: (key: SectionKey) => void; onSaved: () => Promise<void> }) {
   return (
     <>
+      <Season3Card onDone={onSaved} />
       <h1>Обзор</h1>
       <p className="adm-lede">Оранжевое число показывает, сколько полей в разделе ещё пусто. Пустые секции на сайте просто не показываются.</p>
       <div className="adm-tiles">

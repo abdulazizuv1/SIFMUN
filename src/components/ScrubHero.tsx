@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useContent } from '../data/content'
 import { useI18n } from '../i18n'
 import { mountScrub, scrubAllowed, watchGates } from '../lib/scrub'
+import { MunButton } from './Modal'
 import { PrimaryCta } from './Nav'
 import { StaticHero } from './StaticHero'
 import { TriVoice } from './TriVoice'
@@ -104,6 +105,7 @@ function Film() {
                 {t('hero.b1')}
               </span>
             </h1>
+            <MunButton className="munbtn--light band__mun" />
           </div>
         </div>
 

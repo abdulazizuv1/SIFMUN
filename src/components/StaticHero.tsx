@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useContent } from '../data/content'
 import { useI18n } from '../i18n'
+import { MunButton } from './Modal'
 import { PrimaryCta } from './Nav'
 import { TriVoice } from './TriVoice'
 
@@ -27,6 +28,7 @@ export function StaticHero() {
       <div className="hero__top">
         <p className="hero__kicker">{t('hero.kicker')}</p>
         <TriVoice textKey="floor" className="hero__title" />
+        <MunButton className="munbtn--light hero__mun" />
       </div>
 
       <div className="hero__bottom">
