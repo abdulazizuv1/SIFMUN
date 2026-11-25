@@ -5,8 +5,10 @@ import type { User } from 'firebase/auth'
 import { useContent } from '../data/content'
 import { firebaseReady } from '../lib/firebase'
 import {
+  FORM_EXTRA_UPDATE,
   SEASON3_UPDATE,
   appliedUpdates,
+  applyFormExtraUpdate,
   applySeason3Update,
   checkAdmin,
   deleteFiles,
@@ -285,6 +287,48 @@ function ImportCard({ onDone }: { onDone: () => Promise<void> }) {
   )
 }
 
+function FormExtraCard({ onDone }: { onDone: () => Promise<void> }) {
+  const [state, setState] = useState<'checking' | 'ready' | 'done' | 'busy'>('checking')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    let alive = true
+    appliedUpdates()
+      .then((u) => alive && setState(u[FORM_EXTRA_UPDATE] ? 'done' : 'ready'))
+      .catch(() => alive && setState('ready'))
+    return () => {
+      alive = false
+    }
+  }, [])
+  if (state === 'checking' || state === 'done') return null
+  const run = async () => {
+    setState('busy')
+    setError('')
+    try {
+      await applyFormExtraUpdate()
+      await onDone()
+      setState('done')
+    } catch {
+      setError('Не получилось записать. Проверьте, что вы вошли под одним из двух админ-аккаунтов.')
+      setState('ready')
+    }
+  }
+  return (
+    <div className="adm-card adm-card--update">
+      <h2>Обновление: два вопроса в форме делегата</h2>
+      <p>После «Место учёбы или работы» появятся два обязательных вопроса на трёх языках:</p>
+      <ul>
+        <li>«Из какого вы города и страны?» (короткий ответ);</li>
+        <li>«Нужно ли вам общежитие на время конференции?» (Да / Нет).</li>
+      </ul>
+      <p>Остальные вопросы и ваши правки в них не меняются.</p>
+      {error && <p className="adm-error">{error}</p>}
+      <button type="button" className="adm-btn adm-btn--main" disabled={state === 'busy'} onClick={() => void run()}>
+        {state === 'busy' ? 'Записываю…' : 'Добавить вопросы в форму'}
+      </button>
+    </div>
+  )
+}
+
 function Season3Card({ onDone }: { onDone: () => Promise<void> }) {
   const [state, setState] = useState<'checking' | 'ready' | 'done' | 'busy'>('checking')
   const [error, setError] = useState('')
@@ -335,6 +379,7 @@ function Overview({ lookup, onOpen, onSaved }: { lookup: Lookup; onOpen: (key: S
   return (
     <>
       <Season3Card onDone={onSaved} />
+      <FormExtraCard onDone={onSaved} />
       <h1>Обзор</h1>
       <p className="adm-lede">Оранжевое число показывает, сколько полей в разделе ещё пусто. Пустые секции на сайте просто не показываются.</p>
       <div className="adm-tiles">

@@ -143,11 +143,29 @@ const q = (
   options: L[] = [],
 ): Question => ({ id, type, label, required, options, order })
 
+/** Added on 25 November 2026: where the delegate comes from, and whether they need a dormitory.
+    The live database gets them from a one-time admin action that inserts them after "Place of study or work". */
+export const SEASON3_EXTRA_QUESTIONS: Question[] = [
+  q('location', 'short', { en: 'City and country you come from', uz: 'Qaysi shahar va davlatdansiz?', ru: 'Из какого вы города и страны?' }, true, 3),
+  q(
+    'dorm',
+    'single',
+    { en: 'Do you need a dormitory during the conference?', uz: 'Konferensiya davomida sizga yotoqxona kerakmi?', ru: 'Нужно ли вам общежитие на время конференции?' },
+    true,
+    4,
+    [
+      { en: 'Yes', uz: 'Ha', ru: 'Да' },
+      { en: 'No', uz: 'Yoʻq', ru: 'Нет' },
+    ],
+  ),
+]
+
 /** The delegate application, rebuilt from the Google Form the organisers used before. */
 export const SEASON3_QUESTIONS: Question[] = [
   q('name', 'short', { en: 'Full name', uz: 'Toʻliq ismingiz', ru: 'Полное имя' }, true, 0),
   q('email', 'email', { en: 'Email', uz: 'Email', ru: 'Email' }, true, 1),
   q('study', 'short', { en: 'Place of study or work', uz: 'Oʻqish yoki ish joyingiz', ru: 'Место учёбы или работы' }, true, 2),
+  ...SEASON3_EXTRA_QUESTIONS,
   q('telegram', 'short', { en: 'Telegram username', uz: 'Telegram foydalanuvchi nomingiz', ru: 'Имя пользователя в Telegram' }, true, 3),
   q('phone', 'phone', { en: 'Phone number', uz: 'Telefon raqamingiz', ru: 'Номер телефона' }, true, 4),
   q(

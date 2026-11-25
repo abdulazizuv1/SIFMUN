@@ -29,7 +29,16 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
-import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS, SEASON3_VENUE } from '../data/season3'
+import {
+  SEASON3_COMMITTEES,
+  SEASON3_DATE,
+  SEASON3_EXTRA_QUESTIONS,
+  SEASON3_FAQ,
+  SEASON3_FEE,
+  SEASON3_NEW_COMMITTEES,
+  SEASON3_QUESTIONS,
+  SEASON3_VENUE,
+} from '../data/season3'
 import { seed } from '../data/seed'
 import type { ApplicationStatus, Photo, Registration } from '../data/types'
 import { COL, SETTINGS_DOC, app, db, useEmulators } from '../lib/firebase'
@@ -151,6 +160,25 @@ export const SEASON3_UPDATE = 'season3Registration'
 export async function appliedUpdates(): Promise<Record<string, unknown>> {
   const snap = await getDoc(doc(db!, ...UPDATES_DOC))
   return snap.exists() ? snap.data() : {}
+}
+
+export const FORM_EXTRA_UPDATE = 'formCityDorm'
+
+/** Adds "City and country" and "Dormitory" to the delegate form, right after
+    "Place of study or work". Questions edited in the admin stay as they are, and a
+    question that is already there (same id) is not added twice. */
+export async function applyFormExtraUpdate(): Promise<void> {
+  const ref = doc(db!, COL.roles, 'delegate')
+  const snap = await getDoc(ref)
+  const current = (snap.exists() && Array.isArray(snap.data().questions) ? snap.data().questions : []) as Record<string, unknown>[]
+  const have = new Set(current.map((q) => String(q.id)))
+  const extra = SEASON3_EXTRA_QUESTIONS.filter((q) => !have.has(q.id)).map((q) => stripUndefined(q as unknown as Record<string, unknown>))
+  const at = current.findIndex((q) => q.id === 'study')
+  const next = at >= 0 ? [...current.slice(0, at + 1), ...extra, ...current.slice(at + 1)] : [...current, ...extra]
+  const batch = writeBatch(db!)
+  batch.set(ref, { questions: next.map((q, i) => ({ ...q, order: i })) }, { merge: true })
+  batch.set(doc(db!, ...UPDATES_DOC), { [FORM_EXTRA_UPDATE]: serverTimestamp() }, { merge: true })
+  await batch.commit()
 }
 
 /** Season III: date, fee, six committees with their languages, the delegate form, FAQ answers, venue photos, and registration Open. */
