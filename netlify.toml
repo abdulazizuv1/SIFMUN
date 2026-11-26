@@ -8,6 +8,13 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# One address for everyone: the Netlify subdomain forwards to the site's own domain.
+[[redirects]]
+  from = "https://sifmun.netlify.app/*"
+  to = "https://sifmun.uz/:splat"
+  status = 301
+  force = true
+
 # Single-page app: every clean URL (/history, /team, /register, /admin) serves index.html.
 [[redirects]]
   from = "/*"

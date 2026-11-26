@@ -30,6 +30,7 @@ import {
   uploadBytes,
 } from 'firebase/storage'
 import {
+  SEASON3_CHAIR_QUESTIONS,
   SEASON3_COMMITTEES,
   SEASON3_DATE,
   SEASON3_EXTRA_QUESTIONS,
@@ -160,6 +161,20 @@ export const SEASON3_UPDATE = 'season3Registration'
 export async function appliedUpdates(): Promise<Record<string, unknown>> {
   const snap = await getDoc(doc(db!, ...UPDATES_DOC))
   return snap.exists() ? snap.data() : {}
+}
+
+export const CHAIR_UPDATE = 'chairRegistration'
+
+/** Opens chair applications: the chair role gets its questions and is switched on. */
+export async function applyChairUpdate(): Promise<void> {
+  const batch = writeBatch(db!)
+  batch.set(
+    doc(db!, COL.roles, 'chair'),
+    { questions: SEASON3_CHAIR_QUESTIONS.map((q) => stripUndefined(q as unknown as Record<string, unknown>)), active: true },
+    { merge: true },
+  )
+  batch.set(doc(db!, ...UPDATES_DOC), { [CHAIR_UPDATE]: serverTimestamp() }, { merge: true })
+  await batch.commit()
 }
 
 export const FORM_EXTRA_UPDATE = 'formCityDorm'

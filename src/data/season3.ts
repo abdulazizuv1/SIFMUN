@@ -213,6 +213,120 @@ export const SEASON3_QUESTIONS: Question[] = [
   ),
 ]
 
+/** The chair application (added 26 November 2026). The organisers asked for experience,
+    "why SIFMUN" and the silent-committee scenario; the rest covers what a Secretariat
+    needs to pick and place chairs. */
+export const SEASON3_CHAIR_QUESTIONS: Question[] = [
+  q('name', 'short', { en: 'Full name', uz: 'Ism va familiyangiz', ru: 'Имя и фамилия' }, true, 0),
+  q('email', 'email', { en: 'Email', uz: 'Email', ru: 'Email' }, true, 1),
+  q('phone', 'phone', { en: 'Phone number', uz: 'Telefon raqamingiz', ru: 'Номер телефона' }, true, 2),
+  q('telegram', 'short', { en: 'Telegram username', uz: 'Telegram foydalanuvchi nomingiz', ru: 'Имя пользователя в Telegram' }, true, 3),
+  q('study', 'short', { en: 'Place of study or work', uz: 'Oʻqish yoki ish joyingiz', ru: 'Место учёбы или работы' }, true, 4),
+  q('location', 'short', { en: 'City and country you come from', uz: 'Qaysi shahar va davlatdansiz?', ru: 'Из какого вы города и страны?' }, true, 5),
+  q(
+    'experience',
+    'long',
+    {
+      en: 'Your MUN experience: conferences, committees and roles (delegate, chair, Secretariat), and any awards.',
+      uz: 'MUN tajribangiz: konferensiyalar, qoʻmitalar va rollar (delegat, rais, kotibiyat), mukofotlar boʻlsa ularni ham yozing.',
+      ru: 'Ваш опыт MUN: конференции, комитеты и роли (делегат, председатель, секретариат), а также награды, если есть.',
+    },
+    true,
+    6,
+  ),
+  q(
+    'committee',
+    'committees',
+    { en: 'The committee you would like to chair', uz: 'Qaysi qoʻmitada rais boʻlishni xohlaysiz?', ru: 'Какой комитет вы хотели бы вести?' },
+    true,
+    7,
+  ),
+  q(
+    'languages',
+    'multiple',
+    {
+      en: 'Which working languages can you chair in?',
+      uz: 'Qaysi ish tillarida raislik qila olasiz?',
+      ru: 'На каких рабочих языках вы можете вести комитет?',
+    },
+    true,
+    8,
+    [
+      { en: 'English', uz: 'English', ru: 'English' },
+      { en: 'Oʻzbekcha', uz: 'Oʻzbekcha', ru: 'Oʻzbekcha' },
+      { en: 'Русский', uz: 'Русский', ru: 'Русский' },
+    ],
+  ),
+  q(
+    'procedure',
+    'single',
+    {
+      en: 'How well do you know the rules of procedure?',
+      uz: 'Protsedura qoidalarini qanchalik yaxshi bilasiz?',
+      ru: 'Насколько хорошо вы знаете правила процедуры?',
+    },
+    true,
+    9,
+    [
+      { en: 'I have chaired with them', uz: 'Ular boʻyicha raislik qilganman', ru: 'Я уже вёл(а) комитет по ним' },
+      { en: 'I know them well as a delegate', uz: 'Delegat sifatida yaxshi bilaman', ru: 'Хорошо знаю их как делегат' },
+      { en: 'I am still learning them', uz: 'Hali oʻrganyapman', ru: 'Ещё изучаю' },
+    ],
+  ),
+  q(
+    'whySif',
+    'long',
+    { en: 'Why SIFMUN?', uz: 'Nega aynan SIFMUN?', ru: 'Почему именно SIFMUN?' },
+    true,
+    10,
+  ),
+  q(
+    'silent',
+    'long',
+    {
+      en: 'Your committee goes quiet: no motions, no speakers, nobody moves. What do you do?',
+      uz: 'Qoʻmitangiz jim qoldi: taklif yoʻq, soʻzga chiquvchi yoʻq, hech kim harakat qilmayapti. Nima qilasiz?',
+      ru: 'Ваш комитет затих: нет предложений, нет выступающих, никто ничего не делает. Что вы будете делать?',
+    },
+    true,
+    11,
+  ),
+  q(
+    'conflict',
+    'long',
+    {
+      en: 'A delegate keeps breaking the rules of procedure or speaks to others disrespectfully. How do you handle it?',
+      uz: 'Bir delegat protsedura qoidalarini qayta-qayta buzmoqda yoki boshqalarga hurmatsizlik bilan gapirmoqda. Qanday yoʻl tutasiz?',
+      ru: 'Делегат раз за разом нарушает правила процедуры или неуважительно говорит с другими. Как вы поступите?',
+    },
+    true,
+    12,
+  ),
+  q(
+    'dorm',
+    'single',
+    { en: 'Do you need a dormitory during the conference?', uz: 'Konferensiya davomida sizga yotoqxona kerakmi?', ru: 'Нужно ли вам общежитие на время конференции?' },
+    true,
+    13,
+    [
+      { en: 'Yes', uz: 'Ha', ru: 'Да' },
+      { en: 'No', uz: 'Yoʻq', ru: 'Нет' },
+    ],
+  ),
+  q(
+    'commit',
+    'multiple',
+    {
+      en: 'If I am selected, I commit to chairing my committee for the whole conference on 3 January 2027, to preparing for it in advance and to following the instructions of the Secretariat.',
+      uz: 'Agar tanlansam, 2027-yil 3-yanvardagi konferensiya davomida oʻz qoʻmitamga toʻliq raislik qilishga, unga oldindan tayyorlanishga va kotibiyat koʻrsatmalariga amal qilishga majburiyat olaman.',
+      ru: 'Если меня выберут, я обязуюсь вести свой комитет всю конференцию 3 января 2027 года, заранее к ней подготовиться и следовать указаниям секретариата.',
+    },
+    true,
+    14,
+    [{ en: 'Yes, I commit', uz: 'Ha, majburiyat olaman', ru: 'Да, обязуюсь' }],
+  ),
+]
+
 /** FAQ answers that changed now that the date, the fee and the committees are known. */
 export const SEASON3_FAQ: Pick<FaqItem, 'id' | 'answer'>[] = [
   {

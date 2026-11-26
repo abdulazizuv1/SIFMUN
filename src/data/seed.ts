@@ -6,7 +6,7 @@
    names of the organisers) stay empty, and the public site hides empty sections.
    Uzbek and Russian text is a draft waiting for review by a native speaker. */
 import type { L } from '../i18n'
-import { SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS, SEASON3_VENUE } from './season3'
+import { SEASON3_CHAIR_QUESTIONS, SEASON3_COMMITTEES, SEASON3_DATE, SEASON3_FAQ, SEASON3_FEE, SEASON3_NEW_COMMITTEES, SEASON3_QUESTIONS, SEASON3_VENUE } from './season3'
 import type { Content, GalleryItem, Photo } from './types'
 
 const same = (text: string): L => ({ en: text, uz: text, ru: text })
@@ -458,9 +458,9 @@ export const seed: Content = {
         uz: 'Qoʻmitani boshqaring. Bahs adolatli va jonli oʻtishini taʼminlang.',
         ru: 'Ведите комитет. Следите, чтобы дебаты шли честно и не останавливались.',
       },
-      // Registration through the site is for delegates only. An admin can switch this role on later.
-      active: false,
-      questions: [],
+      // Chair applications opened on 26 November 2026.
+      active: true,
+      questions: SEASON3_CHAIR_QUESTIONS,
       order: 2,
     },
   ],

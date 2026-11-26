@@ -91,7 +91,7 @@ export function RegistrationForm() {
       if (q.type !== 'committees') return [answer]
       // A double-delegation committee also asks for the partner's name.
       const picked = committeeEntries.find((e) => e.committee.abbr === answer.value)
-      if (!picked?.sc.double) return [answer]
+      if (!pairs || !picked?.sc.double) return [answer]
       const partner = values[partnerKey(q.id)]
       return [
         answer,
@@ -139,6 +139,8 @@ export function RegistrationForm() {
         sc: { committeeId: committee.id, agenda: { en: '', uz: '', ru: '' }, chairIds: [], language: '', double: false, about: '' },
       }))
   const partnerKey = (questionId: string) => `${questionId}Partner`
+  // Double delegation pairs delegates; a chair applies alone, so chairs get no partner field.
+  const pairs = role.id !== 'chair'
 
   return (
     <form className="regform" onSubmit={submit} noValidate aria-labelledby={`${formId}-title`}>
@@ -251,7 +253,7 @@ export function RegistrationForm() {
                       )
                     })}
                   </div>
-                  {committeeEntries.find((e) => e.committee.abbr === text)?.sc.double && (
+                  {pairs && committeeEntries.find((e) => e.committee.abbr === text)?.sc.double && (
                     <div className="regform__partner">
                       <label htmlFor={`${id}-partner`}>{t('register.partner')}</label>
                       <input

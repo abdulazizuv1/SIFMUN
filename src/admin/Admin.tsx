@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { User } from 'firebase/auth'
 import { useContent } from '../data/content'
 import { firebaseReady } from '../lib/firebase'
 import {
+  CHAIR_UPDATE,
   FORM_EXTRA_UPDATE,
   SEASON3_UPDATE,
   appliedUpdates,
+  applyChairUpdate,
   applyFormExtraUpdate,
   applySeason3Update,
   checkAdmin,
@@ -287,6 +289,79 @@ function ImportCard({ onDone }: { onDone: () => Promise<void> }) {
   )
 }
 
+/** A one-time content update: shown until it has been applied once. */
+function UpdateCard({
+  flag,
+  title,
+  button,
+  run,
+  onDone,
+  children,
+}: {
+  flag: string
+  title: string
+  button: string
+  run: () => Promise<void>
+  onDone: () => Promise<void>
+  children: ReactNode
+}) {
+  const [state, setState] = useState<'checking' | 'ready' | 'done' | 'busy'>('checking')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    let alive = true
+    appliedUpdates()
+      .then((u) => alive && setState(u[flag] ? 'done' : 'ready'))
+      .catch(() => alive && setState('ready'))
+    return () => {
+      alive = false
+    }
+  }, [flag])
+  if (state === 'checking' || state === 'done') return null
+  const go = async () => {
+    setState('busy')
+    setError('')
+    try {
+      await run()
+      await onDone()
+      setState('done')
+    } catch {
+      setError('Не получилось записать. Проверьте, что вы вошли под одним из двух админ-аккаунтов.')
+      setState('ready')
+    }
+  }
+  return (
+    <div className="adm-card adm-card--update">
+      <h2>{title}</h2>
+      {children}
+      {error && <p className="adm-error">{error}</p>}
+      <button type="button" className="adm-btn adm-btn--main" disabled={state === 'busy'} onClick={() => void go()}>
+        {state === 'busy' ? 'Записываю…' : button}
+      </button>
+    </div>
+  )
+}
+
+function ChairCard({ onDone }: { onDone: () => Promise<void> }) {
+  return (
+    <UpdateCard
+      flag={CHAIR_UPDATE}
+      title="Обновление: регистрация председателей"
+      button="Открыть регистрацию председателей"
+      run={applyChairUpdate}
+      onDone={onDone}
+    >
+      <p>Роль «Председатель» включится, и в форме появится выбор «Делегат / Председатель». Анкета председателя, 15 вопросов на трёх языках:</p>
+      <ul>
+        <li>имя и фамилия, email, телефон, Telegram, место учёбы или работы, город и страна;</li>
+        <li>опыт MUN, какой комитет хочет вести, на каких языках может вести, знание правил процедуры;</li>
+        <li>«Почему именно SIFMUN?», что делать, если комитет затих, как поступить с делегатом, который нарушает правила;</li>
+        <li>нужно ли общежитие и обязательство вести комитет весь день конференции, если выберут.</li>
+      </ul>
+      <p>Если у роли уже были вопросы, они будут заменены. Потом всё правится в разделе «Роли и форма заявки».</p>
+    </UpdateCard>
+  )
+}
+
 function FormExtraCard({ onDone }: { onDone: () => Promise<void> }) {
   const [state, setState] = useState<'checking' | 'ready' | 'done' | 'busy'>('checking')
   const [error, setError] = useState('')
@@ -380,6 +455,7 @@ function Overview({ lookup, onOpen, onSaved }: { lookup: Lookup; onOpen: (key: S
     <>
       <Season3Card onDone={onSaved} />
       <FormExtraCard onDone={onSaved} />
+      <ChairCard onDone={onSaved} />
       <h1>Обзор</h1>
       <p className="adm-lede">Оранжевое число показывает, сколько полей в разделе ещё пусто. Пустые секции на сайте просто не показываются.</p>
       <div className="adm-tiles">
